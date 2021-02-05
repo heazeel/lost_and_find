@@ -1,0 +1,67 @@
+@import "./config.scss";
+@import "./normalize.scss";
+@import "./antd.scss";
+
+.pull-left { float: left; }
+.pull-right { float: right; }
+
+//滚动条样式
+::-webkit-scrollbar {
+    width: 10px;    
+    /*height: 4px;*/
+}
+::-webkit-scrollbar-thumb {
+    background: rgba(0,0,0,0.2);
+}
+::-webkit-scrollbar-track {
+    border-radius: 0;
+    background: rgba(255,255,255,1);
+}
+
+body{
+    background-color: #eff3f5;
+}
+
+//markdown解析样式
+.markdown-body{
+    ul,li{
+        list-style:outside !important;
+    }
+    font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
+    font-size: 20px;
+    code{
+        color:#ff5050;
+    }
+    pre{
+        background-color: #23241f;
+        color:white;
+        code{
+            font-size: 1.2em;
+            color:white;
+        }
+    }
+}
+.hljs-name{
+    color:#22863a;
+}
+.hljs-title{
+    color:#a6e22e;
+}
+.hljs-keyword{
+    color: #f92672;;
+}
+.hljs-string{
+    color:#e6a23c;
+}
+.hljs-number{
+    color:#ae81ff;
+}
+.hljs-comment{
+    color:#75715e;
+}
+.hljs-literal{
+    color:#ae81ff;
+}
+.hljs-built_in{
+    color:#e6db74
+}

@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-01-29 21:51:15
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-01 02:00:48
+ * @LastEditTime: 2021-02-18 14:26:49
 -->
 <template>
   <div id="home-footer">
@@ -17,12 +17,11 @@ export default {
 </script>
 <style lang="scss" scoped>
 #home-footer{
+  box-shadow: 0px -2px 8px 1px #CCC;
   .ant-layout-footer{
-    height: 33px;
+    height: 35px;
     width: 100%;
     background-color: white;
-    // position: absolute;
-    // bottom: 0px;
   }
 }
 </style>

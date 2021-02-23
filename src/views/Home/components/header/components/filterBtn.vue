@@ -3,10 +3,13 @@
  * @Author: hezhijie
  * @Date: 2021-01-31 18:50:25
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-02 21:20:11
+ * @LastEditTime: 2021-02-18 16:01:51
 -->
 <template>
-  <div id="filter-btn">
+  <div
+    id="filter-btn"
+    class="filter-btn-down"
+  >
     <a-row
       class="row"
       type="flex"
@@ -92,7 +95,7 @@
           :loading="loading"
           @click="switchListType"
         >
-          列表模式
+          {{ $store.state.switchBtnName }}
         </a-button>
       </a-col>
     </a-row>
@@ -114,9 +117,23 @@ export default {
   methods: {
     switchListType() {
       this.loading = true;
+      this.$store.commit('switchListType');
+      if (!this.$store.state.showMap) {
+        document.getElementById('search').className = 'search-down';
+        document.getElementById('filter-btn').className = 'filter-btn-down'
+        document.getElementsByClassName('ant-layout-header')[0].style.height = '216px'
+        document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2'
+        document.getElementById('home-content').style.top = '217px'
+      } else {
+        document.getElementById('search').className = 'search-up';
+        document.getElementById('filter-btn').className = 'filter-btn-up'
+        document.getElementsByClassName('ant-layout-header')[0].style.height = '140px'
+        document.getElementById('home-content').style.top = '140px'
+        document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC'
+      }
       setTimeout(() => {
         this.loading = false;
-      }, 1000);
+      }, 500);
     }
   }
 }
@@ -125,6 +142,7 @@ export default {
 #filter-btn{
   display: flex;
   justify-content: space-around;
+  transition: all 0.3s ease;
   .row{
     width: 100%;
     #col-left{
@@ -211,5 +229,11 @@ export default {
       }
     }
   }
+}
+.filter-btn-down{
+  transform: translateY(0px);
+}
+.filter-btn-up{
+  transform: translateY(-60px);
 }
 </style>

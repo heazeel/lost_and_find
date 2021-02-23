@@ -1,52 +1,39 @@
 <!--
  * @Description:
  * @Author: hezhijie
- * @Date: 2021-01-29 21:51:15
+ * @Date: 2021-02-18 15:00:40
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-18 14:58:13
+ * @LastEditTime: 2021-02-18 15:16:59
 -->
 <template>
-  <div id="home-content">
-    <a-layout-content
-      v-if="showType == 0"
-      id="main-content"
+  <a-layout-content
+    id="main-content"
+  >
+    <a-card
+      v-for="(item, index) in arr"
+      :id="`item${index}`"
+      :key="index"
+      hoverable
+      style="transform: translate(0%, 0%)"
     >
-      <a-card
-        v-for="(item, index) in arr"
-        :id="`item${index}`"
-        :key="index"
-        hoverable
-        style="transform: translate(0%, 0%)"
+      <img
+        slot="cover"
+        alt="example"
+        src="../../../../../assets/imgs/book.png"
       >
-        <img
-          slot="cover"
-          alt="example"
-          src="../../../assets/imgs/book.png"
-        >
-        <a-card-meta title="Europe Street beat">
-          <template slot="description">
-            {{ index }}
-          </template>
-        </a-card-meta>
-      </a-card>
-    </a-layout-content>
-    <div
-      v-if="showType == 1"
-      class="amap-wrapper"
-    >
-      <el-amap
-        class="amap-box"
-        :vid="'amap-vue'"
-      />
-    </div>
-  </div>
+      <a-card-meta title="Europe Street beat">
+        <template slot="description">
+          {{ index }}
+        </template>
+      </a-card-meta>
+    </a-card>
+  </a-layout-content>
 </template>
 <script>
 export default {
-  name: 'Content',
   data() {
     return {
-      showType: 1, // 0代表列表模式， 1代表地图模式
+      showType: 0, // 0代表列表模式， 1代表地图模式
       timer: false,
       arr: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
       screenWidth: document.body.clientWidth
@@ -166,74 +153,62 @@ export default {
      @media screen and (max-width: 665px) { @content; }
   }
 }
-#home-content{
-  overflow: hidden;
+.ant-layout-content{
   position: relative;
+  background-color: rgb(255, 255, 255);
+  overflow: auto;
+  height: 100%;
   max-width: 2968px;
-  padding: 0px 10px 0px 20px;
-  // margin-bottom: 20px;
-  transition: all 0.3s ease;
-  .amap-wrapper {
+  box-sizing: border-box;
+  .card-mask{
+    position: absolute;
+    top: 0;
+    left: 0;
     width: 100%;
     height: 100%;
+    background-color: #fff;
   }
-  .ant-layout-content{
-    position: relative;
-    background-color: rgb(255, 255, 255);
-    overflow: auto;
-    height: 100%;
-    max-width: 2968px;
-    box-sizing: border-box;
-    .card-mask{
-      position: absolute;
-      top: 0;
-      left: 0;
+  .ant-card{
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 10px;
+    border: none;
+    cursor: default;
+    @include screen(level1) {
+      width: 20%;
+    }
+    @include screen(level2) {
+      width: 25%;
+    }
+    @include screen(level3) {
+      width: 33.3333%;
+    }
+    @include screen(level4) {
+      width: 50%;
+    }
+    @include screen(level5) {
       width: 100%;
-      height: 100%;
-      background-color: #fff;
     }
-    .ant-card{
-      position: absolute;
-      left: 0;
-      top: 0;
-      padding: 10px;
-      border: none;
-      cursor: default;
-      @include screen(level1) {
-        width: 20%;
-      }
-      @include screen(level2) {
-        width: 25%;
-      }
-      @include screen(level3) {
-        width: 33.3333%;
-      }
-      @include screen(level4) {
-        width: 50%;
-      }
-      @include screen(level5) {
+    /deep/ .ant-card-cover{
+      height: auto;
+      position: relative;
+      img{
         width: 100%;
-      }
-      /deep/ .ant-card-cover{
         height: auto;
-        position: relative;
-        img{
-          width: 100%;
-          height: auto;
-        }
-      }
-      /deep/ .ant-card-body{
-        position: relative;
-        width: calc(100% - 2px);
-        min-height: 55px;
-        padding: 10px;
-        box-shadow: 1px 1px 10px 1px #e8e8e8;
-        margin: auto;
       }
     }
-    .ant-card-hoverable:hover{
-      box-shadow: none;
+    /deep/ .ant-card-body{
+      position: relative;
+      width: calc(100% - 2px);
+      min-height: 55px;
+      padding: 10px;
+      box-shadow: 1px 1px 10px 1px #e8e8e8;
+      margin: auto;
     }
+  }
+  .ant-card-hoverable:hover{
+    box-shadow: none;
   }
 }
 </style>

@@ -14,12 +14,24 @@ const routes = [
   {
     path: '/',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "Home" */ '../views/LoginAndRegister/index.vue')
+    component: () => import(/* webpackChunkName: "Home" */ '../views/LoginAndRegister/index.vue'),
   },
   {
     path: '/home',
     name: 'Home',
-    component: () => import(/* webpackChunkName: "Home" */ '../views/Home/index.vue')
+    component: () => import(/* webpackChunkName: "Home" */ '../views/Home/index.vue'),
+    children: [
+      {
+        path: 'map',
+        name: 'Map',
+        component: () => import(/* webpackChunkName: "Home" */ '../views/Home/components/content/components/amap.vue'),
+      },
+      {
+        path: 'list',
+        name: 'List',
+        component: () => import(/* webpackChunkName: "Home" */ '../views/Home/components/content/components/listCard.vue'),
+      },
+    ],
   },
   {
     path: '/about',
@@ -28,12 +40,12 @@ const routes = [
     // this generates a separate chunk (about.[hash].js) for this route
     // which is lazy-loaded when the route is visited.
     component: () =>
-      import(/* webpackChunkName: "about" */ '../views/About.vue')
-  }
+      import(/* webpackChunkName: "about" */ '../views/About.vue'),
+  },
 ];
 
 const router = new VueRouter({
-  routes
+  routes,
 });
 
 export default router;

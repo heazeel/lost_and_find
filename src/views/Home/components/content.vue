@@ -9,20 +9,17 @@
   <div id="home-content">
     <a-layout-content
       v-if="showType == 0"
-      id="main-content"
-    >
+      id="main-content">
       <a-card
         v-for="(item, index) in arr"
         :id="`item${index}`"
         :key="index"
         hoverable
-        style="transform: translate(0%, 0%)"
-      >
+        style="transform: translate(0%, 0%)">
         <img
           slot="cover"
           alt="example"
-          src="../../../assets/imgs/book.png"
-        >
+          src="../../../assets/imgs/book.png">
         <a-card-meta title="Europe Street beat">
           <template slot="description">
             {{ index }}
@@ -32,37 +29,35 @@
     </a-layout-content>
     <div
       v-if="showType == 1"
-      class="amap-wrapper"
-    >
+      class="amap-wrapper">
       <el-amap
         class="amap-box"
-        :vid="'amap-vue'"
-      />
+        :vid="'amap-vue'" />
     </div>
   </div>
 </template>
 <script>
 export default {
   name: 'Content',
-  data() {
+  data () {
     return {
       showType: 1, // 0代表列表模式， 1代表地图模式
       timer: false,
       arr: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      screenWidth: document.body.clientWidth
-    }
+      screenWidth: document.body.clientWidth,
+    };
   },
   watch: {
     'screenWidth': {
-      handler(val) {
+      handler (val) {
       // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
         if (!this.timer) {
           // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
-          this.screenWidth = val
-          this.timer = true
-          const that = this
-          const newArr = []
-          setTimeout(function() {
+          this.screenWidth = val;
+          this.timer = true;
+          const that = this;
+          const newArr = [];
+          setTimeout(function () {
             if (that.screenWidth > 1900) {
               that.listArrangement(newArr, 5);
             } else if (that.screenWidth > 1300 && that.screenWidth <= 1900) {
@@ -74,19 +69,19 @@ export default {
             } else if (that.screenWidth <= 665) {
               that.listArrangement(newArr, 1);
             }
-            that.timer = false
-          }, 400)
+            that.timer = false;
+          }, 400);
         }
       },
       immediate: true,
-    }
+    },
   },
-  mounted() {
-    const that = this
+  mounted () {
+    const that = this;
     window.onresize = () => {
-      window.screenWidth = document.body.clientWidth
-      that.screenWidth = window.screenWidth
-    }
+      window.screenWidth = document.body.clientWidth;
+      that.screenWidth = window.screenWidth;
+    };
     this.scroll();
     // this.scroll(function(direction) {
     //   console.log(direction)
@@ -104,9 +99,9 @@ export default {
     // });
   },
   methods: {
-    listArrangement(arr, section) {
+    listArrangement (arr, section) {
       for (let i = 0; i < this.arr.length; i += section) {
-        arr.push(this.arr.slice(i, i + section))
+        arr.push(this.arr.slice(i, i + section));
       }
       let count = 0;
       for (let i = 0; i < arr.length; i++) {
@@ -127,26 +122,26 @@ export default {
     //     beforeScrollTop = afterScrollTop;
     //   }, 0), false);
     // }
-    scroll() {
-      document.getElementsByClassName('ant-layout-content')[0].addEventListener('scroll', this.$tools.throttle(function() {
+    scroll () {
+      document.getElementsByClassName('ant-layout-content')[0].addEventListener('scroll', this.$tools.throttle(function () {
         var scrollTop = document.getElementsByClassName('ant-layout-content')[0].scrollTop;
         if (scrollTop <= 200) {
           document.getElementById('search').className = 'search-down';
-          document.getElementById('filter-btn').className = 'filter-btn-down'
-          document.getElementsByClassName('ant-layout-header')[0].style.height = '216px'
-          document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2'
-          document.getElementById('home-content').style.top = '217px'
+          document.getElementById('filter-btn').className = 'filter-btn-down';
+          document.getElementsByClassName('ant-layout-header')[0].style.height = '216px';
+          document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2';
+          document.getElementById('home-content').style.top = '217px';
         } else {
           document.getElementById('search').className = 'search-up';
-          document.getElementById('filter-btn').className = 'filter-btn-up'
-          document.getElementsByClassName('ant-layout-header')[0].style.height = '140px'
-          document.getElementById('home-content').style.top = '140px'
-          document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC'
+          document.getElementById('filter-btn').className = 'filter-btn-up';
+          document.getElementsByClassName('ant-layout-header')[0].style.height = '140px';
+          document.getElementById('home-content').style.top = '140px';
+          document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC';
         }
       }, 50), false);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 @mixin screen($sWidth) {

@@ -18,50 +18,18 @@
     background: rgba(255,255,255,1);
 }
 
+$mainColor: #0057FF;
+$searchBackColor: #F5F5F5;
+$inputPlaceholderColor: #707070;
+$hoverBackColor: #F2F2F2;
+$btnBorderColor: #e8e8e8;
+
 body{
     background-color: #eff3f5;
-}
-
-//markdown解析样式
-.markdown-body{
-    ul,li{
-        list-style:outside !important;
+    .amap-logo{
+        display: none!important;
     }
-    font-family: BlinkMacSystemFont,-apple-system,"Segoe UI",Roboto,Oxygen,Ubuntu,Cantarell,"Fira Sans","Droid Sans","Helvetica Neue",Helvetica,Arial,sans-serif;
-    font-size: 20px;
-    code{
-        color:#ff5050;
+    .amap-copyright{
+        display: none!important;
     }
-    pre{
-        background-color: #23241f;
-        color:white;
-        code{
-            font-size: 1.2em;
-            color:white;
-        }
-    }
-}
-.hljs-name{
-    color:#22863a;
-}
-.hljs-title{
-    color:#a6e22e;
-}
-.hljs-keyword{
-    color: #f92672;;
-}
-.hljs-string{
-    color:#e6a23c;
-}
-.hljs-number{
-    color:#ae81ff;
-}
-.hljs-comment{
-    color:#75715e;
-}
-.hljs-literal{
-    color:#ae81ff;
-}
-.hljs-built_in{
-    color:#e6db74
 }

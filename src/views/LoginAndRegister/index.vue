@@ -3,36 +3,32 @@
  * @Author: hezhijie
  * @Date: 2021-02-18 16:21:55
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-23 17:44:47
+ * @LastEditTime: 2021-03-03 17:13:17
 -->
 <template>
   <div class="login-and-register">
     <div class="background">
       <img
         class="login-logo"
-        src="../../assets/imgs/login-logo.png"
-      >
+        src="../../assets/imgs/login-logo.png">
       <transition name="fade">
         <div
           v-if="!$store.state.loginPage.createAccount && !$store.state.loginPage.inputPassword"
-          class="login-and-register-container"
-        >
+          class="login-and-register-container">
           <Account />
         </div>
       </transition>
       <transition name="fade">
         <div
           v-if="!$store.state.loginPage.createAccount && $store.state.loginPage.inputPassword"
-          class="login-and-register-container"
-        >
+          class="login-and-register-container">
           <Password />
         </div>
       </transition>
       <transition name="fade">
         <div
           v-if="$store.state.loginPage.createAccount"
-          class="login-and-register-container"
-        >
+          class="login-and-register-container">
           <Register />
         </div>
       </transition>
@@ -48,15 +44,15 @@ export default {
   components: {
     Account,
     Password,
-    Register
+    Register,
   },
-  data() {
+  data () {
     return {
       isLogin: true,
       isRegister: false,
-    }
-  }
-}
+    };
+  },
+};
 </script>
 <style lang="scss" scoped>
 .fade-enter-active {

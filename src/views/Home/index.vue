@@ -17,17 +17,17 @@
 
 <script>
 
-import Header from './components/header/index'
-import Content from './components/content/index'
-import Footer from './components/footer'
+import Header from './components/header/index';
+import Content from './components/content/index';
+import Footer from './components/footer';
 
 export default {
   name: 'Home',
   components: {
     Header,
     Content,
-    Footer
-  }
+    Footer,
+  },
 };
 </script>
 <style lang="scss" scoped>

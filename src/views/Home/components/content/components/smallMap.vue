@@ -1,49 +1,46 @@
 <!--
- * @Description: 高德地图
+ * @Description: 小地图
  * @Author: hezhijie
- * @Date: 2021-03-04 18:15:42
+ * @Date: 2021-03-04 23:53:04
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-29 14:37:05
+ * @LastEditTime: 2021-03-29 23:45:38
 -->
 <template>
-  <div id="amap-container" class="amap-wrapper">
+  <div id="smallMap-container" class="smallMap-wrapper">
     <ControlBtn @changeMapType="changeMapType" />
   </div>
 </template>
 <script>
-// import {lazyAMapApiLoaderInstance, AMapUI} from 'vue-amap';
-// import AMapUI from 'AMapUI';
 import ControlBtn from './controlBtn';
+import {lazyAMapApiLoaderInstance} from 'vue-amap';
 /* eslint-disable */
 const layer1 = new AMap.TileLayer();
 const layer2 = new AMap.TileLayer.Satellite();
 export default {
-  name: 'Amap',
+  name: 'SmallMap',
+  data () {
+    let self = this;
+    return {
+      markerArr: [],
+    };
+  },
   components: {
     ControlBtn,
   },
-  data () {
-    return {
-      map: null,
-    };
-  },
-  beforeMount () {
-    
-  },
   mounted () {
     this.initMap();
+    this.getLngLat();
   },
   methods: {
     initMap () {
-      this.map = new AMap.Map('amap-container', {
-        center: new AMap.LngLat(120.016282, 30.292866),
-        zoom: 17,
+      this.map = new AMap.Map('smallMap-container', {
+        center: new AMap.LngLat(120.017137, 30.292295),
+        zoom: 15,
         expandZoomRange: true,
-        zooms: [15, 20],
+        zooms: [14, 20],
       });
       this.map.add(layer2);
       this.markArea();
-      this.getLngLat();
     },
     markArea(){
       var schoolArea = [
@@ -85,28 +82,10 @@ export default {
           break;
       }
     },
-    infoWindow (lng, lat) {
-      var infoWindowContent =
-      '<div style="width:150px; height:80px; background-color: #FFF;">' +
-          '<label style="color:grey">故宫博物院</label>' +
-          '<div class="input-item">' +
-              '<div class="input-item-prepend">' +
-                  '<span class="input-item-text" >经纬度</span>' +
-              '</div>' +
-              '<input id="lnglat" type="text" />' +
-          '</div>' +
-      '</div>';
-
-      // 创建一个自定义内容的 infowindow 实例
-      var infoWindow = new AMap.InfoWindow({
-        position: [lng, lat],
-        offset: new AMap.Pixel(0, -30),
-        content: infoWindowContent,
-      });
-
-      infoWindow.open(this.map);
-    },
     marker (lng, lat) {
+      this.map.remove(this.markerArr);
+      this.markerArr.length = 0;
+      
       var icon = new AMap.Icon({
         size: new AMap.Size(18, 25), // 图标尺寸
         image: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png', // Icon的图像
@@ -131,8 +110,10 @@ export default {
         strokeWeight: 2, // 描边宽度
       });
 
-      this.map.add(circle);
-      marker.setMap(this.map);
+      this.markerArr.push(marker);
+      this.markerArr.push(circle);
+
+      this.map.add(this.markerArr)
     },
     getLngLat () {
       var self = this;
@@ -141,20 +122,21 @@ export default {
         console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat());
         console.log(self.polygon.contains([e.lnglat.getLng(), e.lnglat.getLat()]));
         if(!self.polygon.contains([e.lnglat.getLng(), e.lnglat.getLat()])){
-          self.$message.warning('This is a warning message');
+          self.$message.warning('请在指定范围内标注位置！');
         }
       });
       this.polygon.on('click', function(e){
         self.marker(e.lnglat.getLng(), e.lnglat.getLat());
-        self.infoWindow(e.lnglat.getLng(), e.lnglat.getLat());
+        self.$emit('getLngLat', e.lnglat.getLng(), e.lnglat.getLat());
       })
     },
   },
 };
 </script>
 <style lang="scss" scoped>
-.amap-wrapper {
+.smallMap-wrapper {
   width: 100%;
   height: 100%;
 }
 </style>
+

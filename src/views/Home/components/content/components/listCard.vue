@@ -3,24 +3,21 @@
  * @Author: hezhijie
  * @Date: 2021-02-18 15:00:40
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-18 15:16:59
+ * @LastEditTime: 2021-03-31 03:33:24
 -->
 <template>
   <a-layout-content
-    id="main-content"
-  >
+    id="main-content">
     <a-card
-      v-for="(item, index) in arr"
+      v-for="(item, index) in itemArr"
       :id="`item${index}`"
       :key="index"
       hoverable
-      style="transform: translate(0%, 0%)"
-    >
+      style="transform: translate(0%, 0%)">
       <img
         slot="cover"
         alt="example"
-        src="../../../../../assets/imgs/book.png"
-      >
+        src="../../../../../assets/imgs/book.png">
       <a-card-meta title="Europe Street beat">
         <template slot="description">
           {{ index }}
@@ -30,26 +27,27 @@
   </a-layout-content>
 </template>
 <script>
+import { get } from '@/api/axios'; // 导入http中创建的axios实例
 export default {
-  data() {
+  data () {
     return {
       showType: 0, // 0代表列表模式， 1代表地图模式
       timer: false,
-      arr: [1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1],
-      screenWidth: document.body.clientWidth
-    }
+      screenWidth: document.body.clientWidth,
+      itemArr: this.$store.state.goodsItem.itemArr,
+    };
   },
   watch: {
     'screenWidth': {
-      handler(val) {
+      handler (val) {
       // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
         if (!this.timer) {
           // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
-          this.screenWidth = val
-          this.timer = true
-          const that = this
-          const newArr = []
-          setTimeout(function() {
+          this.screenWidth = val;
+          this.timer = true;
+          const that = this;
+          const newArr = [];
+          setTimeout(function () {
             if (that.screenWidth > 1900) {
               that.listArrangement(newArr, 5);
             } else if (that.screenWidth > 1300 && that.screenWidth <= 1900) {
@@ -61,79 +59,63 @@ export default {
             } else if (that.screenWidth <= 665) {
               that.listArrangement(newArr, 1);
             }
-            that.timer = false
-          }, 400)
+            that.timer = false;
+          }, 400);
         }
       },
       immediate: true,
-    }
+    },
   },
-  mounted() {
-    const that = this
+  created () {
+    this.init();
+  },
+  mounted () {
+    const that = this;
     window.onresize = () => {
-      window.screenWidth = document.body.clientWidth
-      that.screenWidth = window.screenWidth
-    }
+      window.screenWidth = document.body.clientWidth;
+      that.screenWidth = window.screenWidth;
+    };
     this.scroll();
-    // this.scroll(function(direction) {
-    //   console.log(direction)
-    //   if (direction === 'up') {
-    //     document.getElementById('search').className = 'search-down';
-    //     document.getElementById('filter-btn').className = 'filter-btn-down'
-    //     document.getElementsByClassName('ant-layout-header')[0].style.height = '216px'
-    //     document.getElementById('home-content').style.top = '216px'
-    //   } else if (direction === 'down') {
-    //     document.getElementById('search').className = 'search-up';
-    //     document.getElementById('filter-btn').className = 'filter-btn-up'
-    //     document.getElementsByClassName('ant-layout-header')[0].style.height = '125px'
-    //     document.getElementById('home-content').style.top = '125px'
-    //   }
-    // });
   },
   methods: {
-    listArrangement(arr, section) {
-      for (let i = 0; i < this.arr.length; i += section) {
-        arr.push(this.arr.slice(i, i + section))
+    async init () {
+      const url = this.HOME + '/goods';
+      const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
+      this.$store.commit('setGoodsItem', res.content);
+      this.itemArr = this.$store.state.goodsItem.itemArr;
+    },
+    listArrangement (itemArr, section) {
+      for (let i = 0; i < this.itemArr.length; i += section) {
+        itemArr.push(this.itemArr.slice(i, i + section));
       }
       let count = 0;
-      for (let i = 0; i < arr.length; i++) {
-        for (let j = 0; j < arr[i].length; j++) {
+      for (let i = 0; i < itemArr.length; i++) {
+        for (let j = 0; j < itemArr[i].length; j++) {
           document.getElementById('item' + count).style.transform = `translate(${j * 100}%, ${i * 100}%)`;
           count++;
         }
       }
     },
-    // scroll(fn) {
-    //   var beforeScrollTop = document.getElementsByClassName('ant-layout-content')[0].scrollTop;
-    //   fn = fn || function() {};
-    //   document.getElementsByClassName('ant-layout-content')[0].addEventListener('scroll', this.$tools.throttle(function() {
-    //     var afterScrollTop = document.getElementsByClassName('ant-layout-content')[0].scrollTop;
-    //     var delta = afterScrollTop - beforeScrollTop;
-    //     if (delta === 0) return false;
-    //     fn(delta > 50 ? 'down' : 'up');
-    //     beforeScrollTop = afterScrollTop;
-    //   }, 0), false);
-    // }
-    scroll() {
-      document.getElementsByClassName('ant-layout-content')[0].addEventListener('scroll', this.$tools.throttle(function() {
+    scroll () {
+      document.getElementsByClassName('ant-layout-content')[0].addEventListener('scroll', this.$tools.throttle(function () {
         var scrollTop = document.getElementsByClassName('ant-layout-content')[0].scrollTop;
         if (scrollTop <= 200) {
           document.getElementById('search').className = 'search-down';
-          document.getElementById('filter-btn').className = 'filter-btn-down'
-          document.getElementsByClassName('ant-layout-header')[0].style.height = '216px'
-          document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2'
-          document.getElementById('home-content').style.top = '217px'
+          document.getElementById('filter-btn').className = 'filter-btn-down';
+          document.getElementsByClassName('ant-layout-header')[0].style.height = '216px';
+          document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2';
+          document.getElementById('home-content').style.top = '217px';
         } else {
           document.getElementById('search').className = 'search-up';
-          document.getElementById('filter-btn').className = 'filter-btn-up'
-          document.getElementsByClassName('ant-layout-header')[0].style.height = '140px'
-          document.getElementById('home-content').style.top = '140px'
-          document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC'
+          document.getElementById('filter-btn').className = 'filter-btn-up';
+          document.getElementsByClassName('ant-layout-header')[0].style.height = '140px';
+          document.getElementById('home-content').style.top = '140px';
+          document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC';
         }
       }, 50), false);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 @mixin screen($sWidth) {
@@ -160,6 +142,7 @@ export default {
   height: 100%;
   max-width: 2968px;
   box-sizing: border-box;
+  margin: 0px 10px 0px 20px;
   .card-mask{
     position: absolute;
     top: 0;

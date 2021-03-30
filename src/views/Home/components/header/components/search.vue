@@ -3,28 +3,24 @@
  * @Author: hezhijie
  * @Date: 2021-01-30 17:30:26
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-15 00:30:19
+ * @LastEditTime: 2021-03-04 21:24:14
 -->
 <template>
   <div
     id="search"
-    class="search-down"
-  >
+    class="search-down">
     <a-row
       id="search-row"
       type="flex"
-      justify="center"
-    >
+      justify="center">
       <a-col flex="auto">
         <a-input
           id="search-input"
-          placeholder="搜索 Lost&Found"
-        >
+          placeholder="搜索 Lost&Found">
           <a-icon
             slot="prefix"
             type="search"
-            :style="{color: '#707070', 'padding-left': '3px'}"
-          />
+            :style="{color: '#707070', 'padding-left': '3px'}" />
         </a-input>
       </a-col>
       <a-col flex="15%">
@@ -32,22 +28,18 @@
           <a-radio-group
             id="search-radio-item"
             default-value="a"
-            button-style="solid"
-          >
+            button-style="solid">
             <div
               id="search-radio-item-mask"
-              ref="slider"
-            />
+              ref="slider" />
             <a-radio-button
               value="a"
-              @click="changeSearchCriteria(0)"
-            >
+              @click="changeSearchCriteria(0)">
               失物招领
             </a-radio-button>
             <a-radio-button
               value="b"
-              @click="changeSearchCriteria(1)"
-            >
+              @click="changeSearchCriteria(1)">
               寻物启事
             </a-radio-button>
           </a-radio-group>
@@ -60,11 +52,11 @@
 export default {
   name: 'Search',
   methods: {
-    changeSearchCriteria(index) {
+    changeSearchCriteria (index) {
       this.$refs.slider.style.transform = `translateX(${index * 97.5}px)`;
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 #search{
@@ -103,7 +95,7 @@ export default {
       border-radius: 28px;
       border-top-right-radius: 0px;
       border-bottom-right-radius: 0px;
-      background-color: #F5F5F5;
+      background-color: $searchBackColor;
       color: #CCC;
       font-size:26px;
       font-weight: bold;
@@ -113,22 +105,22 @@ export default {
         border-radius: 28px;
         border-top-right-radius: 0px;
         border-bottom-right-radius: 0px;
-        background-color: #F5F5F5;
+        background-color: $searchBackColor;
         color: #000;
         font-size: 22px;
         font-weight: bold;
         padding-left: 55px;
         &::-webkit-input-placeholder{
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &::-moz-placeholder{   /* Mozilla Firefox 19+ */
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &:-ms-input-placeholder{  /* Internet Explorer 10-11 */
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &:focus{
           box-shadow:0 0 0 0;
@@ -167,7 +159,7 @@ export default {
               display: none;
             }
           &:hover{
-            background-color: #F2F2F2;
+            background-color: $hoverBackColor;
             color: #000;
           }
           &:nth-child(3){
@@ -208,7 +200,7 @@ export default {
       border-radius: 4px;
       border-top-right-radius: 0px;
       border-bottom-right-radius: 0px;
-      background-color: #F5F5F5;
+      background-color: $searchBackColor;
       color: #CCC;
       font-size:18px;
       font-weight: bold;
@@ -218,22 +210,22 @@ export default {
         border-radius: 28px;
         border-top-right-radius: 0px;
         border-bottom-right-radius: 0px;
-        background-color: #F5F5F5;
+        background-color: $searchBackColor;
         color: #000;
         font-size: 16px;
         font-weight: bold;
         padding-left: 45px;
         &::-webkit-input-placeholder{
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &::-moz-placeholder{   /* Mozilla Firefox 19+ */
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &:-ms-input-placeholder{  /* Internet Explorer 10-11 */
-          color: #707070;
+          color: $inputPlaceholderColor;
         }
         &:focus{
           box-shadow:0 0 0 0;
@@ -273,7 +265,7 @@ export default {
               display: none;
             }
           &:hover{
-            background-color: #F2F2F2;
+            background-color: $hoverBackColor;
             color: #000;
           }
           &:nth-child(3){

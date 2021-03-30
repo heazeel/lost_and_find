@@ -1,0 +1,15 @@
+.ant-btn{
+  border-color: #e8e8e8;
+  &:hover{
+    border-color: #000;
+  }
+  &:focus{
+    outline: 0px;
+  }
+  &:after{
+    display: none;
+  }
+  &:active{
+    opacity: 0.6;
+  }
+}

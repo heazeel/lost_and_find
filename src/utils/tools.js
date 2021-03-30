@@ -14,14 +14,14 @@
  */
 export const throttle = (fn, delay) => {
   var lastTime = 0;
-  return function() {
+  return function () {
     const nowTime = Date.now();
     if (nowTime - lastTime > delay) {
       fn.apply(this);
       lastTime = nowTime;
     }
-  }
-}
+  };
+};
 
 /*
  * @Description: 防抖函数
@@ -31,10 +31,10 @@ export const throttle = (fn, delay) => {
  */
 export const debounce = (fn, delay) => {
   var timer = null;
-  return function() {
+  return function () {
     clearTimeout(timer);
-    timer = setTimeout(function() {
-      fn.apply(this)
+    timer = setTimeout(function () {
+      fn.apply(this);
     }, delay);
-  }
-}
+  };
+};

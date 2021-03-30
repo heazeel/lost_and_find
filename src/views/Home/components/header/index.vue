@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-01-29 21:51:15
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-08 15:00:23
+ * @LastEditTime: 2021-03-25 12:15:12
 -->
 <template>
   <div id="home-header">
@@ -12,9 +12,9 @@
         <img
           id="logo"
           src="../../../../assets/imgs/logo.png"
-          alt=""
-        >
-        <Login />
+          alt="">
+        <Login v-if="account == null" />
+        <PersonInfo v-if="account !== null" />
       </div>
       <a-divider />
       <Search />
@@ -23,17 +23,27 @@
   </div>
 </template>
 <script>
-import Login from './components/login'
-import Search from './components/search'
-import FilterBtn from './components/filterBtn'
+import Login from './components/login';
+import PersonInfo from './components/personInfo';
+import Search from './components/search';
+import FilterBtn from './components/filterBtn';
 export default {
   name: 'Header',
   components: {
     Login,
+    PersonInfo,
     Search,
-    FilterBtn
-  }
-}
+    FilterBtn,
+  },
+  data () {
+    return {
+      account: null,
+    };
+  },
+  mounted () {
+    this.account = localStorage.getItem('account');
+  },
+};
 </script>
 <style lang="scss" scoped>
 #home-header{

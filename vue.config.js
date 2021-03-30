@@ -28,8 +28,8 @@ module.exports = {
       // the source template
       template: 'public/index.html',
       // output as dist/index.html
-      filename: 'index.html'
-    }
+      filename: 'index.html',
+    },
     // when using the entry-only string format,
     // template is inferred to be `public/subpage.html`
     // and falls back to `public/index.html` if not found.
@@ -41,7 +41,7 @@ module.exports = {
   lintOnSave: 'warning',
 
   chainWebpack: config => {
-    config.plugins.delete('prefetch-index')
+    config.plugins.delete('prefetch-index');
   },
   configureWebpack: config => {
     config.resolve = {
@@ -50,8 +50,8 @@ module.exports = {
         vue: 'vue/dist/vue.js',
         '@': path.resolve(__dirname, './src'),
         '@c': path.resolve(__dirname, './src/components'),
-        valineJS: resolve('static/valine.js')
-      }
+        valineJS: resolve('static/valine.js'),
+      },
     };
   },
 
@@ -61,21 +61,21 @@ module.exports = {
 
   // devServer:{type:Object} 3个属性host,port,https
   // 它支持webPack-dev-server的所有选项
-  devServer: {
-    // port: 8080, // 端口号
-    // host: '0.0.0.0',
-    // https: false, // https:{type:Boolean}
-    // open: true, //配置自动启动浏览器
-    // proxy: {
-    //   '/devApi':{
-    //     target: "http://www.web-jshtml.cn/productapi/token",
-    //     changeOrigin: true,
-    //     pathRewrite:{
-    //       '^/devApi': ''
-    //     }
-    //   }
-    // }
-  },
+  // devServer: {
+  // port: 8080, // 端口号
+  // host: '0.0.0.0',
+  // https: false, // https:{type:Boolean}
+  // open: true, //配置自动启动浏览器
+  // proxy: {
+  //   '/devApi':{
+  //     target: "http://www.web-jshtml.cn/productapi/token",
+  //     changeOrigin: true,
+  //     pathRewrite:{
+  //       '^/devApi': ''
+  //     }
+  //   }
+  // }
+  // },
   // devServer: {
   //   open: true, //编译完成是否打开网页
   //   host: '0.0.0.0', //使用指定地址，默认localhost，0.0.0.0代表可以被外界访问
@@ -90,13 +90,42 @@ module.exports = {
   //   before: app => {
   //   }
   // },
-
+  devServer: {
+    port: 8081,
+    host: 'localhost',
+    open: true,
+    https: false,
+    proxy: {
+      '/api': {
+        target: 'http://localhost:8080/lost_and_find/',
+        ws: true,
+        changeOrigin: true,
+        pathRewrite: {
+          '^/api': '',
+        },
+      },
+    },
+  },
+  // dev: {
+  //   // Paths
+  //   assetsSubDirectory: 'static',
+  //   assetsPublicPath: '/',
+  //   proxyTable: { // axios跨域处理
+  //     '/api': { // 此处并非和url一致
+  //       target: 'http://localhost:8080/lost_and_find/',
+  //       changeOrigin: true, // 允许跨域
+  //       pathRewrite: {
+  //         '^/api': ''
+  //       }
+  //     }
+  //   }
+  // },
   css: {
     loaderOptions: {
       sass: {
-        prependData: '@import "./src/styles/main.scss";'
-      }
-    }
+        prependData: '@import "./src/styles/main.scss";',
+      },
+    },
     // postcss: {
     //     plugins: [
     //     require('postcss-px2rem')({
@@ -105,5 +134,5 @@ module.exports = {
     //     ]
     //     }
     // }
-  }
+  },
 };

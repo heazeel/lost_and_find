@@ -3,98 +3,108 @@
  * @Author: hezhijie
  * @Date: 2021-01-31 18:50:25
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-18 16:01:51
+ * @LastEditTime: 2021-03-05 13:23:51
 -->
 <template>
   <div
     id="filter-btn"
-    class="filter-btn-down"
-  >
+    class="filter-btn-down">
     <a-row
       class="row"
       type="flex"
-      justify="space-between"
-    >
+      justify="space-between">
       <a-col
         id="col-left"
-        :span="12"
-      >
-        <a-dropdown :trigger="['click']">
+        :span="12">
+        <a-dropdown
+          :get-popup-container="getPopupContainer"
+          :trigger="['click']">
           <a-menu
-            slot="overlay"
-          >
-            <a-menu-item key="1"> <a-icon type="user" />1st menu item </a-menu-item>
-            <a-menu-item key="2"> <a-icon type="user" />2nd menu item </a-menu-item>
-            <a-menu-item key="3"> <a-icon type="user" />3rd item </a-menu-item>
+            slot="overlay">
+            <a-menu-item key="1">
+              <a-icon type="user" />1st menu item
+            </a-menu-item>
+            <a-menu-item key="2">
+              <a-icon type="user" />2nd menu item
+            </a-menu-item>
+            <a-menu-item key="3">
+              <a-icon type="user" />3rd item
+            </a-menu-item>
           </a-menu>
           <a-button>
             <svg
               id="icon-type"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 22 22"
-              class="icon"
-            ><path d="M20 7.5h-5.5v-6a.5.5 0 00-.854-.353L1.654 13.136a.5.5 0 00.353.854h5.681a4.56 4.56 0 00.365 3.435 4.726 4.726 0 008.61-.425H20a.5.5 0 00.5-.5V8a.5.5 0 00-.5-.5zm-11.618 5H4.364L13 3.85V7.5h-1.5a.5.5 0 00-.5.5v2.672A4.749 4.749 0 008.382 12.5zm3.868 6.025a3.275 3.275 0 113.275-3.275 3.275 3.275 0 01-3.275 3.275z" /></svg>
+              class="icon"><path d="M20 7.5h-5.5v-6a.5.5 0 00-.854-.353L1.654 13.136a.5.5 0 00.353.854h5.681a4.56 4.56 0 00.365 3.435 4.726 4.726 0 008.61-.425H20a.5.5 0 00.5-.5V8a.5.5 0 00-.5-.5zm-11.618 5H4.364L13 3.85V7.5h-1.5a.5.5 0 00-.5.5v2.672A4.749 4.749 0 008.382 12.5zm3.868 6.025a3.275 3.275 0 113.275-3.275 3.275 3.275 0 01-3.275 3.275z" /></svg>
             <span
               id="filter-btn-name"
-              ref="filterBtnName"
-            >类别</span>
+              ref="filterBtnName">类别</span>
             <a-icon type="caret-down" />
           </a-button>
         </a-dropdown>
-        <a-dropdown :trigger="['click']">
+        <a-dropdown
+          :get-popup-container="getPopupContainer"
+          :trigger="['click']">
           <a-menu
-            slot="overlay"
-          >
-            <a-menu-item key="1"> <a-icon type="user" />1st menu item </a-menu-item>
-            <a-menu-item key="2"> <a-icon type="user" />2nd menu item </a-menu-item>
-            <a-menu-item key="3"> <a-icon type="user" />3rd item </a-menu-item>
+            slot="overlay">
+            <a-menu-item key="1">
+              <a-icon type="user" />1st menu item
+            </a-menu-item>
+            <a-menu-item key="2">
+              <a-icon type="user" />2nd menu item
+            </a-menu-item>
+            <a-menu-item key="3">
+              <a-icon type="user" />3rd item
+            </a-menu-item>
           </a-menu>
           <a-button>
             <svg
               id="icon-position"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="-4808 -20688 14.286 20"
-              class="icon"
-            ><g><path d="M-4800.857-20688a7.143 7.143 0 0 0-7.143 7.143c0 5.714 7.143 12.857 7.143 12.857s7.143-7.143 7.143-12.857a7.142 7.142 0 0 0-7.143-7.143zm0 10a2.857 2.857 0 1 1 2.857-2.859 2.858 2.858 0 0 1-2.857 2.859z" /></g></svg>
+              class="icon"><g><path d="M-4800.857-20688a7.143 7.143 0 0 0-7.143 7.143c0 5.714 7.143 12.857 7.143 12.857s7.143-7.143 7.143-12.857a7.142 7.142 0 0 0-7.143-7.143zm0 10a2.857 2.857 0 1 1 2.857-2.859 2.858 2.858 0 0 1-2.857 2.859z" /></g></svg>
             <span
               id="filter-btn-name"
-              ref="filterBtnName"
-            >位置</span>
+              ref="filterBtnName">位置</span>
             <a-icon type="caret-down" />
           </a-button>
         </a-dropdown>
-        <a-dropdown :trigger="['click']">
+        <a-dropdown
+          :get-popup-container="getPopupContainer"
+          :trigger="['click']">
           <a-menu
-            slot="overlay"
-          >
-            <a-menu-item key="1"> <a-icon type="user" />1st menu item </a-menu-item>
-            <a-menu-item key="2"> <a-icon type="user" />2nd menu item </a-menu-item>
-            <a-menu-item key="3"> <a-icon type="user" />3rd item </a-menu-item>
+            slot="overlay">
+            <a-menu-item key="1">
+              <a-icon type="user" />1st menu item
+            </a-menu-item>
+            <a-menu-item key="2">
+              <a-icon type="user" />2nd menu item
+            </a-menu-item>
+            <a-menu-item key="3">
+              <a-icon type="user" />3rd item
+            </a-menu-item>
           </a-menu>
           <a-button>
             <svg
               id="icon-time"
               xmlns="http://www.w3.org/2000/svg"
               viewBox="0 0 18 18"
-              class="icon"
-            ><path d="M3.085 3.633a7.9 7.9 0 00-1.7 7.779h4.281zm9.172-1.927a7.918 7.918 0 00-7.864.764l1.322 3.983zm4.714 7.871C16.986 9.386 17 9.2 17 9a7.975 7.975 0 00-3.229-6.406l-3.25 2.358zm-3.546-.564l-2.5 7.741a8 8 0 005.724-5.431zm-4.27 7.979l1.284-3.972H2.092A7.987 7.987 0 009 17a1.026 1.026 0 00.155-.008z" /></svg>
+              class="icon"><path d="M3.085 3.633a7.9 7.9 0 00-1.7 7.779h4.281zm9.172-1.927a7.918 7.918 0 00-7.864.764l1.322 3.983zm4.714 7.871C16.986 9.386 17 9.2 17 9a7.975 7.975 0 00-3.229-6.406l-3.25 2.358zm-3.546-.564l-2.5 7.741a8 8 0 005.724-5.431zm-4.27 7.979l1.284-3.972H2.092A7.987 7.987 0 009 17a1.026 1.026 0 00.155-.008z" /></svg>
             <span
               id="filter-btn-name"
-              ref="filterBtnName"
-            >时间</span>
+              ref="filterBtnName">时间</span>
             <a-icon type="caret-down" />
           </a-button>
         </a-dropdown>
       </a-col>
       <a-col
         id="col-right"
-        :span="12"
-      >
+        :span="12">
         <a-button
           icon="search"
           :loading="loading"
-          @click="switchListType"
-        >
+          @click="switchListType">
           {{ $store.state.switchBtnName }}
         </a-button>
       </a-col>
@@ -104,39 +114,44 @@
 <script>
 export default {
   name: 'FilterBtn',
-  data() {
+  data () {
     return {
       btnStatus: {
         'type': false,
         'position': false,
-        'time': false
+        'time': false,
       },
       loading: false,
-    }
+    };
   },
   methods: {
-    switchListType() {
+    getPopupContainer () {
+      return document.getElementById('col-left');
+    },
+    switchListType () {
       this.loading = true;
       this.$store.commit('switchListType');
       if (!this.$store.state.showMap) {
-        document.getElementById('search').className = 'search-down';
-        document.getElementById('filter-btn').className = 'filter-btn-down'
-        document.getElementsByClassName('ant-layout-header')[0].style.height = '216px'
-        document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2'
-        document.getElementById('home-content').style.top = '217px'
+        this.$router.push('/home/list');
+        // document.getElementById('search').className = 'search-down';
+        // document.getElementById('filter-btn').className = 'filter-btn-down';
+        // document.getElementsByClassName('ant-layout-header')[0].style.height = '216px';
+        // document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2';
+        // document.getElementById('home-content').style.top = '217px';
       } else {
-        document.getElementById('search').className = 'search-up';
-        document.getElementById('filter-btn').className = 'filter-btn-up'
-        document.getElementsByClassName('ant-layout-header')[0].style.height = '140px'
-        document.getElementById('home-content').style.top = '140px'
-        document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC'
+        // document.getElementById('search').className = 'search-up';
+        // document.getElementById('filter-btn').className = 'filter-btn-up';
+        // document.getElementsByClassName('ant-layout-header')[0].style.height = '140px';
+        // document.getElementById('home-content').style.top = '140px';
+        // document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC';
+        setTimeout(this.$router.push('/home/map'), 5000);
       }
       setTimeout(() => {
         this.loading = false;
       }, 500);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 <style lang="scss" scoped>
 #filter-btn{
@@ -154,7 +169,7 @@ export default {
         padding: 0 0px;
         color: #000;
         font-weight: bold;
-        border-color: #e8e8e8;
+        border-color: btnBorderColor;
         border-radius: 4px;
         margin-left: 10px;
         &:hover{
@@ -197,13 +212,13 @@ export default {
         }
       }
       .ant-dropdown-open{
-        border-color: #0057FF;
+        border-color: $mainColor;
         &:hover{
-          border-color:#0057FF;
+          border-color: $mainColor;
         }
         #filter-btn-name{
           transform: translate(-32px, -18px) scale(0.8);
-          color: #0057FF;
+          color: $mainColor;
         }
         i{
           transform-origin: 50% 48%;

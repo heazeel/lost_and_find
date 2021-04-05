@@ -3,18 +3,17 @@
  * @Author: hezhijie
  * @Date: 2021-01-29 20:40:09
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-02-18 16:34:48
+ * @LastEditTime: 2021-04-02 17:18:10
  */
 import Vue from 'vue';
 import VueRouter from 'vue-router';
 
 Vue.use(VueRouter);
-
 const routes = [
   {
     path: '/',
     name: 'Login',
-    component: () => import(/* webpackChunkName: "Home" */ '../views/LoginAndRegister/index.vue'),
+    component: () => import(/* webpackChunkName: "Login" */ '../views/LoginAndRegister/index.vue'),
   },
   {
     path: '/home',
@@ -24,12 +23,12 @@ const routes = [
       {
         path: 'map',
         name: 'Map',
-        component: () => import(/* webpackChunkName: "Home" */ '../views/Home/components/content/components/amap.vue'),
+        component: () => import(/* webpackChunkName: "Map" */ '../views/Home/components/content/components/amap.vue'),
       },
       {
         path: 'list',
         name: 'List',
-        component: () => import(/* webpackChunkName: "Home" */ '../views/Home/components/content/components/listCard.vue'),
+        component: () => import(/* webpackChunkName: "List" */ '../views/Home/components/content/components/listCard.vue'),
       },
     ],
   },

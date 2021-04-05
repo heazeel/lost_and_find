@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-03-04 18:46:15
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-30 22:22:14
+ * @LastEditTime: 2021-04-04 19:42:08
 -->
 <template>
   <a-modal
@@ -57,7 +57,7 @@
           </a-form-item>
           <a-form-item label="物品照片">
             <a-upload
-              :data="uploadData"
+              :data="{folder: typeForm.formType}"
               :action="url"
               list-type="picture-card"
               :file-list="fileList"
@@ -175,9 +175,6 @@ export default {
       previewImage: '',
       fileList: [],
       url: this.HOME + '/upload',
-      uploadData: {
-        folder: 'find-img',
-      },
     };
   },
   beforeCreate () {
@@ -212,10 +209,12 @@ export default {
           this.loading = false;
           return;
         }
+        let photos = this.fileList.map((item) => item.response.content).reduce((prev, cur) => prev+ ',' + cur);
         let values = {
           ...fieldsValue,
+          'positionLngLat': fieldsValue['positionLngLat'].split(' ')[0] + ',' + fieldsValue['positionLngLat'].split(' ')[4],
           'date': fieldsValue['date'].format('YYYY-MM-DD'),
-          'photos': this.fileList.length == 0 ? null : this.fileList.map((item) => item.response.content),
+          'photos': photos,
         };
         Object.assign(formData, values);
         console.log(values);
@@ -274,10 +273,9 @@ export default {
     },
     handleChange ({ file, fileList, event }) {
       this.fileList = fileList;
-      console.log(this.fileList);
     },
     getLngLat (lng, lat) {
-      this.form.setFieldsValue({['positionLngLat']: `经度：${lng}， 纬度：${lat}`});
+      this.form.setFieldsValue({['positionLngLat']: `经度: ${lng} , 纬度: ${lat}`});
     },
   },
 };

@@ -3,151 +3,196 @@
  * @Author: hezhijie
  * @Date: 2021-03-04 18:15:42
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-29 14:37:05
+ * @LastEditTime: 2021-04-04 19:37:34
 -->
 <template>
-  <div id="amap-container" class="amap-wrapper">
+  <!-- <div id="amap-container" class="amap-wrapper">
     <ControlBtn @changeMapType="changeMapType" />
+    <Drawer :visible="visible" :detail-data="detailData" @close="closeDrawer" />
+  </div> -->
+  <div class="amap-wrapper">
+    <el-amap ref="map"
+      vid="amapDemo"
+      :amap-manager="amapManager"
+      :center="center"
+      :zoom="zoom"
+      :zooms="[15, 20]"
+      :events="events"
+      :plugin="plugin"
+      :expand-zoom-range="true"
+      class="amap-demo">
+      <el-amap-marker v-for="(marker, index) in markers"
+        :key="index"
+        :position="marker.position"
+        :events="marker.events"
+        :vid="index"></el-amap-marker>
+      <el-amap-info-window v-if="window"
+        :position="window.position"
+        :visible="window.visible"
+        :offset="[0, -30]"
+        :auto-move="true"
+        :show-shadow="false"
+        :close-when-click-map="true">
+        <div :style="slotStyle">
+          <b>{{ window.content.title }}</b>
+          <button @click="showDetail(window.content)">
+            Add
+          </button>
+        </div>
+      </el-amap-info-window>
+      <el-amap-polygon v-for="(polygon, index) in polygons"
+        :key="index"
+        :ref="`polygon_${index}`"
+        :fill-opacity="0"
+        stroke-color="#FF0000"
+        :vid="index"
+        :path="polygon.path"
+        :draggable="polygon.draggable"
+        :events="polygon.events"></el-amap-polygon>
+    </el-amap>
+    <Drawer :visible="visible" :detail-data="detailData" @close="closeDrawer" />
   </div>
 </template>
 <script>
 // import {lazyAMapApiLoaderInstance, AMapUI} from 'vue-amap';
 // import AMapUI from 'AMapUI';
+import { AMapManager, lazyAMapApiLoaderInstance } from 'vue-amap';
+let amapManager = new AMapManager();
 import ControlBtn from './controlBtn';
-/* eslint-disable */
-const layer1 = new AMap.TileLayer();
-const layer2 = new AMap.TileLayer.Satellite();
+import { get } from '@/api/axios'; // 导入http中创建的axios实例
 export default {
   name: 'Amap',
   components: {
-    ControlBtn,
+    Drawer: () => import('./drawer'),
   },
   data () {
     return {
       map: null,
+      visible: false,
+      itemArr: this.$store.state.goodsItem.itemArr,
+      markers: [],
+      windows: [],
+      window: '',
+      detailData: {
+        photos: '',
+      },
+      amapManager,
+      zoom: 16,
+      center: [120.016282, 30.292866],
+      events: {
+        // init: (o) => {
+        //   console.log(o.getCenter());
+        //   console.log(this.$refs.map.$$getInstance());
+        //   o.getCity(result => {
+        //     console.log(result);
+        //   });
+        // },
+        // 'moveend': () => {
+        // },
+        // 'zoomchange': () => {
+        // },
+        // click: (e) => {
+        //   alert('map clicked');
+        // }
+      },
+      plugin: [{
+        pName: 'MapType',
+        defaultType: 1,
+        showTrafic: false,
+        events: {
+          init (o) {
+            console.log(o);
+          },
+        },
+      }],
+      slotStyle: {
+        padding: '2px 8px',
+        background: '#eee',
+        color: '#333',
+        border: '1px solid #aaa',
+      },
+      polygons: [
+        {
+          draggable: false,
+          path: [
+            [120.004499, 30.290223],
+            [120.012689, 30.293738],
+            [120.011602, 30.297256],
+            [120.023401, 30.300292],
+            [120.024026, 30.297135],
+            [120.026119, 30.291341],
+            [120.019795, 30.289399],
+            [120.019738, 30.289527],
+            [120.019644, 30.289581],
+            [120.019299, 30.289488],
+            [120.019362, 30.28931],
+            [120.015955, 30.288397],
+            [120.015834, 30.288695],
+            [120.014873, 30.288511],
+            [120.014971, 30.288094],
+            [120.007323, 30.285862],
+          ],
+          events: {
+            // click: () => {
+            //   alert('click polygon');
+            //   console.log(amapManager.getComponent(0));
+            //   console.log(this.$refs.map.$$getCenter());
+            //   console.log(this.$refs.polygon_0[0].$$getPath());
+            // },
+          },
+        },
+      ],
     };
   },
-  beforeMount () {
-    
+  created () {
+    this.init();
   },
   mounted () {
-    this.initMap();
+    let markers = [];
+    let windows = [];
+
+    let self = this;
+
+    this.itemArr.forEach((item, index) => {
+      markers.push({
+        position: item.positionLngLat.split(','),
+        events: {
+          click () {
+            self.windows.forEach(window => {
+              window.visible = false;
+            });
+
+            self.window = self.windows[index];
+            self.$nextTick(() => {
+              self.window.visible = true;
+            });
+          },
+        },
+      });
+
+      windows.push({
+        position: item.positionLngLat.split(','),
+        content: item,
+        visible: false,
+      });
+    });
+
+    this.markers = markers;
+    this.windows = windows;
   },
   methods: {
-    initMap () {
-      this.map = new AMap.Map('amap-container', {
-        center: new AMap.LngLat(120.016282, 30.292866),
-        zoom: 17,
-        expandZoomRange: true,
-        zooms: [15, 20],
-      });
-      this.map.add(layer2);
-      this.markArea();
-      this.getLngLat();
+    async init () {
+      const url = this.HOME + '/goods';
+      const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
+      this.$store.commit('setGoodsItem', res.content);
+      this.itemArr = this.$store.state.goodsItem.itemArr;
     },
-    markArea(){
-      var schoolArea = [
-        [120.004499, 30.290223],
-        [120.012689, 30.293738],
-        [120.011602, 30.297256],
-        [120.023401, 30.300292],
-        [120.024026, 30.297135],
-        [120.026119, 30.291341],
-        [120.019795, 30.289399],
-        [120.019738, 30.289527],
-        [120.019644, 30.289581],
-        [120.019299, 30.289488],
-        [120.019362, 30.28931],
-        [120.015955, 30.288397],
-        [120.015834, 30.288695],
-        [120.014873, 30.288511],
-        [120.014971, 30.288094],
-        [120.007323, 30.285862]
-      ]
-      this.polygon = new AMap.Polygon({
-        path: schoolArea,
-        fillColor: '#fff', // 多边形填充颜色
-        fillOpacity: 0,
-        strokeWeight: 2, // 线条宽度，默认为 1
-        strokeColor: 'red', // 线条颜色
-      });
-      this.map.add(this.polygon);
+    showDetail (value) {
+      this.visible = true;
+      this.detailData = value;
     },
-    changeMapType(key){
-      switch (key) {
-        case '0':
-          layer2.hide();
-          break;
-        case '1':
-          layer2.show();
-          break;
-        default:
-          break;
-      }
-    },
-    infoWindow (lng, lat) {
-      var infoWindowContent =
-      '<div style="width:150px; height:80px; background-color: #FFF;">' +
-          '<label style="color:grey">故宫博物院</label>' +
-          '<div class="input-item">' +
-              '<div class="input-item-prepend">' +
-                  '<span class="input-item-text" >经纬度</span>' +
-              '</div>' +
-              '<input id="lnglat" type="text" />' +
-          '</div>' +
-      '</div>';
-
-      // 创建一个自定义内容的 infowindow 实例
-      var infoWindow = new AMap.InfoWindow({
-        position: [lng, lat],
-        offset: new AMap.Pixel(0, -30),
-        content: infoWindowContent,
-      });
-
-      infoWindow.open(this.map);
-    },
-    marker (lng, lat) {
-      var icon = new AMap.Icon({
-        size: new AMap.Size(18, 25), // 图标尺寸
-        image: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png', // Icon的图像
-        imageOffset: new AMap.Pixel(0, 0), // 图像相对展示区域的偏移量，适于雪碧图等
-        imageSize: new AMap.Size(18, 25), // 根据所设置的大小拉伸或压缩图片
-      });
-
-      var marker = new AMap.Marker({
-        // icon: '//a.amap.com/jsapi_demos/static/demo-center/icons/poi-marker-default.png',
-        icon: icon,
-        anchor: 'bottom-center', // 设置锚点
-        position: [lng, lat],
-        offset: new AMap.Pixel(0, 0),
-      });
-
-      var circle = new AMap.Circle({
-        center: [lng, lat],  // 圆心位置
-        radius: 10, // 圆半径
-        fillColor: '#1791fc',   // 圆形填充颜色
-        fillOpacity: 0.4,
-        strokeColor: '#fff', // 描边颜色
-        strokeWeight: 2, // 描边宽度
-      });
-
-      this.map.add(circle);
-      marker.setMap(this.map);
-    },
-    getLngLat () {
-      var self = this;
-      console.log('getLngLat', this.map)
-      this.map.on('click', function (e) {
-        console.log(e.lnglat.getLng() + ',' + e.lnglat.getLat());
-        console.log(self.polygon.contains([e.lnglat.getLng(), e.lnglat.getLat()]));
-        if(!self.polygon.contains([e.lnglat.getLng(), e.lnglat.getLat()])){
-          self.$message.warning('This is a warning message');
-        }
-      });
-      this.polygon.on('click', function(e){
-        self.marker(e.lnglat.getLng(), e.lnglat.getLat());
-        self.infoWindow(e.lnglat.getLng(), e.lnglat.getLat());
-      })
+    closeDrawer () {
+      this.visible = false;
     },
   },
 };

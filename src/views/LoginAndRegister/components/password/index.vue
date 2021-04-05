@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-02-23 16:20:47
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-30 17:23:04
+ * @LastEditTime: 2021-04-01 23:01:13
 -->
 <template>
   <div class="login-content">
@@ -79,7 +79,7 @@ export default {
       if (res.code === 200) {
         this.$message.success(`欢迎用户 ${this.form.account}!`);
         sessionStorage.setItem('userId', res.content.userId);
-        this.$router.push('/home/map');
+        this.$router.push('/home/list');
       } else {
         this.$message.error(res.msg);
       }

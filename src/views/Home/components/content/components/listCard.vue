@@ -3,38 +3,58 @@
  * @Author: hezhijie
  * @Date: 2021-02-18 15:00:40
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-31 03:33:24
+ * @LastEditTime: 2021-04-04 13:34:23
 -->
 <template>
   <a-layout-content
     id="main-content">
-    <a-card
-      v-for="(item, index) in itemArr"
+    <div v-for="(item, index) in itemArr"
       :id="`item${index}`"
       :key="index"
-      hoverable
-      style="transform: translate(0%, 0%)">
-      <img
-        slot="cover"
-        alt="example"
-        src="../../../../../assets/imgs/book.png">
-      <a-card-meta title="Europe Street beat">
-        <template slot="description">
-          {{ index }}
-        </template>
-      </a-card-meta>
-    </a-card>
+      class="item-card"
+      @click="showDetail(item)">
+      <a-card
+        style="transform: translate(0%, 0%)"
+        :body-style="{}">
+        <img
+          slot="cover"
+          alt="example"
+          :src="item.photos.split(',')[0]">
+        <a-card-meta id="meta1" :title="item.type">
+        </a-card-meta>
+        <a-card-meta id="meta2" :title="item.title">
+          <template slot="description">
+            {{ item.date }}
+          </template>
+        </a-card-meta>
+      </a-card>
+      <div class="card-mask">
+        <p>{{ item.description }}</p>
+        <p>{{ item.positionArea }}</p>
+        <p>{{ item.positionDetail }}</p>
+        <p>{{ item.userName }}</p>
+      </div>
+    </div>
+    <Drawer :visible="visible" :detail-data="detailData" @close="closeDrawer" />
   </a-layout-content>
 </template>
 <script>
 import { get } from '@/api/axios'; // 导入http中创建的axios实例
+import Drawer from './drawer';
 export default {
+  components: {
+    Drawer: () => import('./drawer'),
+  },
   data () {
     return {
       showType: 0, // 0代表列表模式， 1代表地图模式
       timer: false,
       screenWidth: document.body.clientWidth,
       itemArr: this.$store.state.goodsItem.itemArr,
+      visible: false,
+      detailData: {
+        photos: '',
+      },
     };
   },
   watch: {
@@ -114,6 +134,14 @@ export default {
         }
       }, 50), false);
     },
+    showDetail (val) {
+      this.visible = true;
+      this.detailData = val;
+      console.log(val);
+    },
+    closeDrawer () {
+      this.visible = false;
+    },
   },
 };
 </script>
@@ -143,21 +171,13 @@ export default {
   max-width: 2968px;
   box-sizing: border-box;
   margin: 0px 10px 0px 20px;
-  .card-mask{
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: #fff;
-  }
-  .ant-card{
+  .item-card{
     position: absolute;
     left: 0;
     top: 0;
     padding: 10px;
     border: none;
-    cursor: default;
+    cursor: pointer;
     @include screen(level1) {
       width: 20%;
     }
@@ -173,25 +193,64 @@ export default {
     @include screen(level5) {
       width: 100%;
     }
-    /deep/ .ant-card-cover{
-      height: auto;
-      position: relative;
-      img{
-        width: 100%;
-        height: auto;
+    .ant-card{
+      border: 0px;
+      /deep/ .ant-card-cover{
+        height: 280px;
+        position: relative;
+        img{
+          object-fit: fill;
+          border-radius: 5px;
+          filter: none;
+        }
+      }
+      /deep/ .ant-card-body{
+        position: relative;
+        // width: calc(100% - 2px);
+        min-height: 55px;
+        padding: 10px;
+        // box-shadow: 1px 1px 10px 1px #e8e8e8;
+        margin: auto;
+        #meta1{
+          .ant-card-meta-title{
+            text-align: start;
+            color: #000;
+            font-size: 20px;
+            font-weight: bold;
+          }
+        }
+        #meta2{
+          font-size: 16px;
+          margin-top: 5px;
+          .ant-card-meta-title{
+            float: left;
+          }
+          .ant-card-meta-description{
+            float: right;
+          }
+        }
       }
     }
-    /deep/ .ant-card-body{
-      position: relative;
-      width: calc(100% - 2px);
-      min-height: 55px;
-      padding: 10px;
-      box-shadow: 1px 1px 10px 1px #e8e8e8;
+    .card-mask{
+      position: absolute;
+      top: 10px;
+      left: 0;
+      right: 0;
       margin: auto;
+      width: calc(100% - 20px);
+      height: 280px;
+      background-color: rgba(0,0,0,0.3);
+      transition: opacity ease 0.3s;
+      opacity: 0;
+      border-radius: 5px;
+      color: white;
     }
   }
-  .ant-card-hoverable:hover{
-    box-shadow: none;
+  .item-card:hover > .card-mask{
+    opacity: 1;
+  }
+  .item-card:hover > .ant-card > .ant-card-cover > img{
+    filter: blur(3px);
   }
 }
 </style>

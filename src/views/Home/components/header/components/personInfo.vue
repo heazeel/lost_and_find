@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-01-29 22:50:57
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-05 13:40:48
+ * @LastEditTime: 2021-04-03 00:49:02
 -->
 <template>
   <div id="personInfo">
@@ -49,7 +49,7 @@
     <a-popover placement="bottomRight" class="photoPopover">
       <template slot="title">
         <div style="display: flex; align-items: center;">
-          <img src="@/assets/imgs/book.png" style="width: 70px; height: 70px; border-radius: 35px; margin: 10px 15px 10px 0px;" />
+          <img src="@/assets/imgs/book.png" style="width: 70px; height: 70px; border-radius: 35px; margin: 10px 15px 10px 0px; object-fit: cover;" />
           <div style="display: flex; flex-direction: column;">
             <span style="font-size: 22px">{{ username }}</span>
             <span style="font-size: 14px">{{ account }}</span>

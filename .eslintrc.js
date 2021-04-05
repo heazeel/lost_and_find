@@ -3,7 +3,7 @@
  * @Author: linjia
  * @Date: 2020-03-11 17:31:39
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-04 12:45:18
+ * @LastEditTime: 2021-04-03 15:55:16
  */
 module.exports = {
   root: true,
@@ -177,7 +177,7 @@ module.exports = {
     // 禁止对原生对象赋值
     'no-native-reassign': 2,
     // 禁止在非赋值或条件语句中使用 new 操作符
-    'no-new': 2,
+    // 'no-new': 2,
     // 禁止对 Function 对象使用 new 操作符
     'no-new-func': 0,
     // 禁止对 String，Number 和 Boolean 使用 new 操作符

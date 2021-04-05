@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-01-31 18:50:25
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-05 13:23:51
+ * @LastEditTime: 2021-04-02 19:07:03
 -->
 <template>
   <div
@@ -43,12 +43,14 @@
             <a-icon type="caret-down" />
           </a-button>
         </a-dropdown>
-        <a-dropdown
-          :get-popup-container="getPopupContainer"
-          :trigger="['click']">
-          <a-menu
-            slot="overlay">
-            <a-menu-item key="1">
+        <a-cascader :options="options" @change="onChange">
+          <a-dropdown
+            id="position"
+            :get-popup-container="getPopupContainer"
+            :trigger="['click']">
+            <a-menu
+              slot="overlay">
+            <!-- <a-menu-item key="1">
               <a-icon type="user" />1st menu item
             </a-menu-item>
             <a-menu-item key="2">
@@ -56,20 +58,21 @@
             </a-menu-item>
             <a-menu-item key="3">
               <a-icon type="user" />3rd item
-            </a-menu-item>
-          </a-menu>
-          <a-button>
-            <svg
-              id="icon-position"
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="-4808 -20688 14.286 20"
-              class="icon"><g><path d="M-4800.857-20688a7.143 7.143 0 0 0-7.143 7.143c0 5.714 7.143 12.857 7.143 12.857s7.143-7.143 7.143-12.857a7.142 7.142 0 0 0-7.143-7.143zm0 10a2.857 2.857 0 1 1 2.857-2.859 2.858 2.858 0 0 1-2.857 2.859z" /></g></svg>
-            <span
-              id="filter-btn-name"
-              ref="filterBtnName">位置</span>
-            <a-icon type="caret-down" />
-          </a-button>
-        </a-dropdown>
+            </a-menu-item> -->
+            </a-menu>
+            <a-button>
+              <svg
+                id="icon-position"
+                xmlns="http://www.w3.org/2000/svg"
+                viewBox="-4808 -20688 14.286 20"
+                class="icon"><g><path d="M-4800.857-20688a7.143 7.143 0 0 0-7.143 7.143c0 5.714 7.143 12.857 7.143 12.857s7.143-7.143 7.143-12.857a7.142 7.142 0 0 0-7.143-7.143zm0 10a2.857 2.857 0 1 1 2.857-2.859 2.858 2.858 0 0 1-2.857 2.859z" /></g></svg>
+              <span
+                id="filter-btn-name"
+                ref="filterBtnName">位置</span>
+              <a-icon type="caret-down" />
+            </a-button>
+          </a-dropdown>
+        </a-cascader>
         <a-dropdown
           :get-popup-container="getPopupContainer"
           :trigger="['click']">
@@ -122,6 +125,40 @@ export default {
         'time': false,
       },
       loading: false,
+      options: [
+        {
+          value: 'zhejiang',
+          label: 'Zhejiang',
+          children: [
+            {
+              value: 'hangzhou',
+              label: 'Hangzhou',
+              children: [
+                {
+                  value: 'xihu',
+                  label: 'West Lake',
+                },
+              ],
+            },
+          ],
+        },
+        {
+          value: 'jiangsu',
+          label: 'Jiangsu',
+          children: [
+            {
+              value: 'nanjing',
+              label: 'Nanjing',
+              children: [
+                {
+                  value: 'zhonghuamen',
+                  label: 'Zhong Hua Men',
+                },
+              ],
+            },
+          ],
+        },
+      ],
     };
   },
   methods: {
@@ -150,6 +187,9 @@ export default {
         this.loading = false;
       }, 500);
     },
+    onChange () {
+      console.log();
+    },
   },
 };
 </script>
@@ -165,7 +205,7 @@ export default {
       .ant-dropdown-trigger{
         float: left;
         height: 38px;
-        width: 100px;
+        min-width: 100px;
         padding: 0 0px;
         color: #000;
         font-weight: bold;

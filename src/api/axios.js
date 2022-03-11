@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-02-27 16:26:18
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-03 17:12:04
+ * @LastEditTime: 2021-04-20 22:00:51
  */
 
 import axios from 'axios';
@@ -104,7 +104,6 @@ export function post (url, params = {}, options = {}) {
 // response 拦截器，主要对请求后的数据进行统一处理
 axios.interceptors.response.use(response => {
   // 如果http状态码正常
-  console.log(response.data);
   if (response && (response.status === 200 || response.status === 304 || response.status === 400)) {
     // 校验返回的状态码
     // response = codeStatusHandle(response.data);

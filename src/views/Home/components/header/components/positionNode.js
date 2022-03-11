@@ -3,105 +3,69 @@
  * @Author: hezhijie
  * @Date: 2021-03-10 21:14:03
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-09 15:47:33
+ * @LastEditTime: 2021-04-09 17:36:57
  */
 let position = [
   {
-    title: 'A区',
+    label: 'A区',
     value: 'A区',
-    key: 'A区',
-    pid: 0,
-    selectable: false,
     children: [
       {
-        title: '寝室区',
-        value: 'A寝室区',
-        key: 'A寝室区',
-        pid: 1,
-        selectable: false,
+        label: '寝室区',
+        value: '寝室区',
         children: [],
       },
       {
-        title: '教学区',
-        value: 'A教学区',
-        key: 'A教学区',
-        pid: 1,
-        selectable: false,
+        label: '教学区',
+        value: '教学区',
         children: [],
       },
     ],
   },
   {
-    title: 'B区',
+    label: 'B区',
     value: 'B区',
-    key: 'B区',
-    pid: 0,
-    selectable: false,
     children: [
       {
-        title: '寝室区',
-        value: 'B寝室区',
-        key: 'B寝室区',
-        pid: 1,
-        selectable: false,
+        label: '寝室区',
+        value: '寝室区',
         children: [],
       },
       {
-        title: '教学区',
-        value: 'B教学区',
-        key: 'B教学区',
-        pid: 1,
-        selectable: false,
+        label: '教学区',
+        value: '教学区',
         children: [],
       },
     ],
   },
   {
-    title: 'C区',
+    label: 'C区',
     value: 'C区',
-    key: 'C区',
-    pid: 0,
-    selectable: false,
     children: [
       {
-        title: '寝室区',
-        value: 'C寝室区',
-        key: 'C寝室区',
-        pid: 1,
-        selectable: false,
+        label: '寝室区',
+        value: '寝室区',
         children: [],
       },
       {
-        title: '教学区',
-        value: 'C教学区',
-        key: 'C教学区',
-        pid: 1,
-        selectable: false,
+        label: '教学区',
+        value: '教学区',
         children: [],
       },
     ],
   },
   {
-    title: 'D区',
+    label: 'D区',
     value: 'D区',
-    key: 'D区',
-    pid: 0,
-    selectable: false,
     children: [
       {
-        title: '寝室区',
-        value: 'D寝室区',
-        key: 'D寝室区',
-        pid: 1,
-        selectable: false,
+        label: '寝室区',
+        value: '寝室区',
         children: [],
       },
       {
-        title: '教学区',
-        value: 'D教学区',
-        key: 'D教学区',
-        pid: 1,
-        selectable: false,
+        label: '教学区',
+        value: '教学区',
         children: [],
       },
     ],
@@ -112,10 +76,8 @@ let position = [
 let bedroomA = [];
 for (let i = 1; i < 13; i++) {
   let obj = {
-    title: `博文苑${i}号楼`,
+    label: `博文苑${i}号楼`,
     value: `博文苑${i}号楼`,
-    key: `博文苑${i}号楼`,
-    pid: 2,
   };
   bedroomA.push(obj);
 }
@@ -125,10 +87,8 @@ position[0].children[0].children = JSON.parse(JSON.stringify(bedroomA));
 let teachBuildingA = [];
 for (let i = 1; i < 38; i++) {
   let obj = {
-    title: `恕园${i}号楼`,
+    label: `恕园${i}号楼`,
     value: `恕园${i}号楼`,
-    key: `恕园${i}号楼`,
-    pid: 2,
   };
   teachBuildingA.push(obj);
 }
@@ -138,10 +98,8 @@ position[0].children[1].children = JSON.parse(JSON.stringify(teachBuildingA));
 let bedroomB = [];
 for (let i = 1; i < 5; i++) {
   let obj = {
-    title: `精思苑${i}号楼`,
+    label: `精思苑${i}号楼`,
     value: `精思苑${i}号楼`,
-    key: `精思苑${i}号楼`,
-    pid: 2,
   };
   bedroomB.push(obj);
 }
@@ -151,10 +109,8 @@ position[1].children[0].children = JSON.parse(JSON.stringify(bedroomB));
 let teachBuildingB = [];
 for (let i = 1; i < 14; i++) {
   let obj = {
-    title: `勤园${i}号楼`,
+    label: `勤园${i}号楼`,
     value: `勤园${i}号楼`,
-    key: `勤园${i}号楼`,
-    pid: 2,
   };
   teachBuildingB.push(obj);
 }
@@ -164,10 +120,8 @@ position[1].children[1].children = JSON.parse(JSON.stringify(teachBuildingB));
 let bedroomC = [];
 for (let i = 1; i < 13; i++) {
   let obj = {
-    title: `进学苑${i}号楼`,
+    label: `进学苑${i}号楼`,
     value: `进学苑${i}号楼`,
-    key: `进学苑${i}号楼`,
-    pid: 2,
   };
   bedroomC.push(obj);
 }
@@ -177,10 +131,8 @@ position[2].children[0].children = JSON.parse(JSON.stringify(bedroomC));
 let teachBuildingC = [];
 for (let i = 1; i < 38; i++) {
   let obj = {
-    title: `诚园${i}号楼`,
+    label: `诚园${i}号楼`,
     value: `诚园${i}号楼`,
-    key: `诚园${i}号楼`,
-    pid: 2,
   };
   teachBuildingC.push(obj);
 }
@@ -202,10 +154,8 @@ position[2].children[1].children = JSON.parse(JSON.stringify(teachBuildingC));
 let teachBuildingD = [];
 for (let i = 1; i < 38; i++) {
   let obj = {
-    title: `慎园${i}号楼`,
+    label: `慎园${i}号楼`,
     value: `慎园${i}号楼`,
-    key: `慎园${i}号楼`,
-    pid: 2,
   };
   teachBuildingD.push(obj);
 }

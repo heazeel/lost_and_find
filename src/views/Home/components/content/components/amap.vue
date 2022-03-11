@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-03-04 18:15:42
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-04 19:37:34
+ * @LastEditTime: 2021-04-21 13:31:37
 -->
 <template>
   <!-- <div id="amap-container" class="amap-wrapper">
@@ -22,10 +22,15 @@
       :expand-zoom-range="true"
       class="amap-demo">
       <el-amap-marker v-for="(marker, index) in markers"
-        :key="index"
+        :key="index+1"
         :position="marker.position"
         :events="marker.events"
-        :vid="index"></el-amap-marker>
+        :offset="[-15, -30]"
+        :vid="index">
+        <div :style="{width:'30px', height:'40px'}">
+          <img style="width:100%; height:100%; object-fit: contain;" :src="ICON[marker.type]">
+        </div>
+      </el-amap-marker>
       <el-amap-info-window v-if="window"
         :position="window.position"
         :visible="window.visible"
@@ -34,10 +39,23 @@
         :show-shadow="false"
         :close-when-click-map="true">
         <div :style="slotStyle">
-          <b>{{ window.content.title }}</b>
-          <button @click="showDetail(window.content)">
-            Add
-          </button>
+          <img style="width:300px; height:250px; object-fit: contain; margin-bottom: 10px;" :src="window.content.photos.split(',')[0]">
+          <a-descriptions :title="window.content.type" size="small" :column="1">
+            <a-descriptions-item label="标题">
+              {{ window.content.title }}
+            </a-descriptions-item>
+            <a-descriptions-item label="区域">
+              {{ window.content.positionArea }}
+            </a-descriptions-item>
+            <a-descriptions-item label="日期">
+              {{ window.content.date }}
+            </a-descriptions-item>
+            <a-descriptions-item>
+              <a-button type="primary" @click="showDetail(window.content)">
+                查看详情
+              </a-button>
+            </a-descriptions-item>
+          </a-descriptions>
         </div>
       </el-amap-info-window>
       <el-amap-polygon v-for="(polygon, index) in polygons"
@@ -54,12 +72,27 @@
   </div>
 </template>
 <script>
-// import {lazyAMapApiLoaderInstance, AMapUI} from 'vue-amap';
-// import AMapUI from 'AMapUI';
-import { AMapManager, lazyAMapApiLoaderInstance } from 'vue-amap';
-let amapManager = new AMapManager();
-import ControlBtn from './controlBtn';
+import { AMapManager } from 'vue-amap';
 import { get } from '@/api/axios'; // 导入http中创建的axios实例
+let amapManager = new AMapManager();
+const ICON = {
+  '证件': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/card.png',
+  '钱包': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/moneyBag.png',
+  '手机': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/phone.png',
+  '钥匙': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/key.png',
+  '银行卡': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/card.png',
+  '校园卡': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/card.png',
+  '手提包': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/handBag.png',
+  '笔记本': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/books.png',
+  '电脑': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/computer.png',
+  '首饰': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/earings.png',
+  '衣服': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/cloth.png',
+  '耳机': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/airpods.png',
+  '相机': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/camera.png',
+  '电动车': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/bike.png',
+  '自行车': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/bike.png',
+  '其他': 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/bike.png',
+};
 export default {
   name: 'Amap',
   components: {
@@ -69,7 +102,7 @@ export default {
     return {
       map: null,
       visible: false,
-      itemArr: this.$store.state.goodsItem.itemArr,
+      ICON,
       markers: [],
       windows: [],
       window: '',
@@ -97,7 +130,7 @@ export default {
       },
       plugin: [{
         pName: 'MapType',
-        defaultType: 1,
+        defaultType: 0,
         showTrafic: false,
         events: {
           init (o) {
@@ -106,10 +139,8 @@ export default {
         },
       }],
       slotStyle: {
-        padding: '2px 8px',
-        background: '#eee',
+        padding: '10px 0 0 8px',
         color: '#333',
-        border: '1px solid #aaa',
       },
       polygons: [
         {
@@ -144,48 +175,63 @@ export default {
       ],
     };
   },
+  computed: {
+    itemArr () {
+      return this.$store.state.goodsItem.itemArr;
+    },
+  },
+  watch: {
+    itemArr () {
+      this.initData();
+    },
+  },
   created () {
     this.init();
   },
   mounted () {
-    let markers = [];
-    let windows = [];
-
-    let self = this;
-
-    this.itemArr.forEach((item, index) => {
-      markers.push({
-        position: item.positionLngLat.split(','),
-        events: {
-          click () {
-            self.windows.forEach(window => {
-              window.visible = false;
-            });
-
-            self.window = self.windows[index];
-            self.$nextTick(() => {
-              self.window.visible = true;
-            });
-          },
-        },
-      });
-
-      windows.push({
-        position: item.positionLngLat.split(','),
-        content: item,
-        visible: false,
-      });
-    });
-
-    this.markers = markers;
-    this.windows = windows;
+    this.initData();
   },
   methods: {
     async init () {
-      const url = this.HOME + '/goods';
+      const url = '/goods';
       const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
       this.$store.commit('setGoodsItem', res.content);
-      this.itemArr = this.$store.state.goodsItem.itemArr;
+      // this.$store.dispatch('init');
+    },
+    initData () {
+      let markers = [];
+      let windows = [];
+
+      let self = this;
+
+      this.itemArr.forEach((item, index) => {
+        markers.push({
+          position: item.positionLngLat.split(','),
+          // template: `<div style="background-color: white; width: 30px; height: 30px; background-image: url('../../../../assets/imgs/card.png')"></div>`,
+          type: item.type,
+          events: {
+            click () {
+              self.windows.forEach(window => {
+                window.visible = false;
+              });
+
+              self.window = self.windows[index];
+              self.$nextTick(() => {
+                self.window.visible = true;
+              });
+            },
+          },
+        });
+
+        windows.push({
+          position: item.positionLngLat.split(','),
+          content: item,
+          visible: false,
+        });
+      });
+
+      this.markers = markers;
+      this.windows = windows;
     },
     showDetail (value) {
       this.visible = true;

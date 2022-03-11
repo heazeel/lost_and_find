@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-04-02 00:47:58
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-04 13:33:35
+ * @LastEditTime: 2021-04-21 13:03:01
 -->
 <template>
   <a-drawer
@@ -34,9 +34,6 @@
           <div v-for="(item, index) in detailData.photos.split(',')" :key="index">
             <img :src="item">
           </div>
-          <div v-for="(item, index) in detailData.photos.split(',')" :key="index">
-            <img :src="item">
-          </div>
         </a-carousel>
         <div id="vcomments"></div>
       </a-col>
@@ -45,11 +42,15 @@
           <div id="person-info">
             <img src="@/assets/imgs/book.png" />
             <div id="person-detail">
-              <span id="user-name">username</span>
-              <span id="user-account">1520800291@qq.com</span>
+              <span id="user-name">{{ detailData.userName }}</span>
+              <span id="user-account">{{ detailData.userId }}</span>
             </div>
           </div>
-          <a-button id="connect-btn" type="primary" @click="onChildrenDrawerOpen">
+          <a-button
+            id="connect-btn"
+            :style="detailData.userId == userId ? 'visibility: hidden;' : ''"
+            type="primary"
+            @click="onChildrenDrawerOpen(detailData.userId)">
             联系
           </a-button>
         </div>
@@ -58,7 +59,7 @@
           <h1>标题</h1>
           <ul>
             <li>
-              <img src="@/assets/imgs/btn-back3.jpg">
+              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back3.jpg">
               <div class="content">
                 <p>{{ detailData.title }}</p>
               </div>
@@ -69,15 +70,15 @@
           <h1>物品信息</h1>
           <ul>
             <li>
-              <img src="@/assets/imgs/btn-back1.jpg">
+              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back1.jpg">
               <div class="content">
                 <p>{{ detailData.type }}</p>
               </div>
             </li>
             <li>
-              <img src="@/assets/imgs/btn-back2.jpg">
+              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back2.jpg">
               <div class="content">
-                <p>世界很大空间圣诞节卡号是大家哈加快速度回到房间撒谎第三季开发哈</p>
+                <p>{{ detailData.description }}</p>
               </div>
             </li>
           </ul>
@@ -86,13 +87,13 @@
           <h1>位置信息</h1>
           <ul>
             <li>
-              <img src="@/assets/imgs/btn-back4.jpg">
+              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back4.jpg">
               <div class="content">
                 <p>{{ detailData.positionArea }}</p>
               </div>
             </li>
             <li>
-              <img src="@/assets/imgs/btn-back5.jpg">
+              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back5.jpg">
               <div class="content">
                 <p>{{ detailData.positionDetail }}</p>
               </div>
@@ -102,18 +103,30 @@
       </a-col>
     </a-row>
     <a-drawer
-      title="Two-level Drawer"
       :closable="false"
       placement="left"
       :width="450"
+      :body-style="{
+        padding: '0px',
+        height: '100%'
+      }"
       :visible="childrenDrawer"
+      :after-visible-change="afterChildrenVisibleChange"
       @close="onChildrenDrawerClose">
+      <!-- <Chat /> -->
+      <Message ref="messageList" :signal="true" />
     </a-drawer>
   </a-drawer>
 </template>
 <script>
 import Valine from 'valine';
+import Message from '@/components/chat/message';
+import { mapActions, mapGetters } from 'vuex';
+import { post } from '@/api/axios'; // 导入http中创建的axios实例
 export default {
+  components: {
+    Message,
+  },
   props: {
     visible: {
       type: Boolean,
@@ -127,22 +140,40 @@ export default {
   data () {
     return {
       childrenDrawer: false,
+      signal: true,
+      userId: null,
     };
   },
   created () {
-    console.log('created');
-    console.log(this.detailData);
+    // console.log('created');
+    // console.log(this.detailData);
+    this.userId = localStorage.getItem('userId');
   },
   mounted () {
-    console.log(this.detailData);
+    // console.log(this.detailData);
   },
   methods: {
+    ...mapActions(['addfirend']),
     afterVisibleChange (val) {
-      console.log('visible', val);
       this.initValine();
     },
-    onChildrenDrawerOpen () {
-      this.childrenDrawer = true;
+    afterChildrenVisibleChange (val) {
+      const option = {
+        id: this.detailData.userId, // 联系人id
+        params: localStorage.getItem('userInfo').userId, // 自己的id
+      };
+      this.addfirend(option);
+      this.$refs.messageList.select({name: this.detailData.userId});
+    },
+    async onChildrenDrawerOpen (userId) {
+      if (localStorage.getItem('userId') !== null) {
+        this.childrenDrawer = true;
+        // let url = '/sendEmail';
+        // const res = await post(url, { userId: userId, _method: 'PUT'});
+      }
+      else {
+        this.$message.warning('请先登录！');
+      }
     },
     onChildrenDrawerClose () {
       this.childrenDrawer = false;
@@ -159,6 +190,7 @@ export default {
         placeholder: '有线索的小伙伴快举个爪！',
         visitor: true,
         avatar: 'wavatar',
+        path: self.detailData.goodsId,
         // path: self.detailData.goodsId,
       });
     },
@@ -258,6 +290,7 @@ export default {
           position: relative;
           min-height: 50px;
           height: fit-content;
+          height: -moz-fit-content;
           width: 100%;
           // box-sizing: border-box;
           border-radius: 5px;
@@ -281,6 +314,7 @@ export default {
           }
           .content{
             height: fit-content;
+            height: -moz-fit-content;
             width: 100%;
             position: relative;
             z-index: 10;

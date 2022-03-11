@@ -3,49 +3,23 @@
  * @Author: hezhijie
  * @Date: 2021-02-18 16:21:55
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-03 17:13:17
+ * @LastEditTime: 2021-04-21 10:34:06
 -->
 <template>
   <div class="login-and-register">
     <div class="background">
       <img
         class="login-logo"
-        src="../../assets/imgs/login-logo.png">
+        src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/login-logo.png">
       <transition name="fade">
-        <div
-          v-if="!$store.state.loginPage.createAccount && !$store.state.loginPage.inputPassword"
-          class="login-and-register-container">
-          <Account />
-        </div>
-      </transition>
-      <transition name="fade">
-        <div
-          v-if="!$store.state.loginPage.createAccount && $store.state.loginPage.inputPassword"
-          class="login-and-register-container">
-          <Password />
-        </div>
-      </transition>
-      <transition name="fade">
-        <div
-          v-if="$store.state.loginPage.createAccount"
-          class="login-and-register-container">
-          <Register />
-        </div>
+        <router-view></router-view>
       </transition>
     </div>
   </div>
 </template>
 <script>
-import Account from './components/account/index';
-import Password from './components/password/index';
-import Register from './components/register/index';
 export default {
   name: 'LoginAndRegister',
-  components: {
-    Account,
-    Password,
-    Register,
-  },
   data () {
     return {
       isLogin: true,
@@ -68,12 +42,14 @@ export default {
 .login-and-register{
   width: 100%;
   height: 100%;
-  background-image: url('../../assets/imgs/TomHegen.jpg');
+  background-image: url('https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/TomHegen.jpg');
   background-size: cover;
   .background{
     width: 100%;
     height: 100%;
     background: rgba(0,0,0,0.5);
+    display: flex;
+    align-items: center;
     .login-logo{
       width: 300px;
       position: absolute;
@@ -84,21 +60,20 @@ export default {
     }
     .login-and-register-container{
       /deep/ .tips-container{
-        width: fit-content;
         font-size: 16px;
         margin-bottom: 30px;
-        h1{
-          width: fit-content;
+        display: flex;
+        flex-direction: column;
+        align-items: flex-start;
+        .title-name{
           font-size: 35px;
           font-weight: bold;
-        }
-        .create-account{
-          width: fit-content;
-          margin: 10px 0;
+          margin-bottom: 20px;
         }
       }
       /deep/ .ant-form-explain{
         width: fit-content;
+        width: -moz-fit-content;
       }
       /deep/ .ant-form-item-label{
         line-height: 20px;
@@ -114,18 +89,33 @@ export default {
           }
         }
       }
+      /deep/ .ant-tabs{
+        margin-top: -15px;
+        .ant-tabs-nav-wrap{
+          .ant-tabs-nav-scroll{
+            display:flex;
+            justify-content:flex-start;
+            .ant-tabs-tab:hover{
+              color: $mainColor;
+            }
+            .ant-tabs-tab-active{
+              color: $mainColor;
+            }
+            .ant-tabs-ink-bar{
+              background-color: $mainColor;
+            }
+          }
+        }
+      }
       padding: 50px;
       width: 510px;
       height: fit-content;
+      height: -moz-fit-content;
       position: absolute;
       right: 20%;
-      top: 0;
-      bottom: 0;
-      margin: auto;
-      // display: flex;
-      // flex-direction: column;
-      // justify-content: center;
-      // align-items: center;
+      // top: 0;
+      // bottom: 0;
+      // margin: auto;
       border: 1px solid #000;
       border-radius: 5px;
       background-color: #FFF;

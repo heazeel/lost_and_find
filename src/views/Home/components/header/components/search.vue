@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-01-30 17:30:26
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-04 21:24:14
+ * @LastEditTime: 2021-04-20 23:09:00
 -->
 <template>
   <div
@@ -16,29 +16,60 @@
       <a-col flex="auto">
         <a-input
           id="search-input"
-          placeholder="搜索 Lost&Found">
+          v-model="filterData.description"
+          autocomplete="off"
+          placeholder="搜索 Lost&Found"
+          @keyup.enter="handleSearch">
           <a-icon
             slot="prefix"
             type="search"
-            :style="{color: '#707070', 'padding-left': '3px'}" />
+            :style="{color: '#707070', 'padding-left': '3px'}"
+            @click="handleSearch" />
+          <a-tooltip slot="suffix" title="图像搜索">
+            <a-popover
+              placement="bottomRight"
+              trigger="click">
+              <div slot="content" class="clearfix" style="width: 102px;">
+                <a-upload
+                  :action="url"
+                  list-type="picture-card"
+                  :file-list="fileList"
+                  @preview="handlePreview"
+                  @change="handleChange">
+                  <div v-if="fileList.length < 1">
+                    <a-icon type="plus" />
+                    <div class="ant-upload-text">
+                      上传图像
+                    </div>
+                  </div>
+                </a-upload>
+                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+                  <img alt="example" style="width: 100%" :src="previewImage" />
+                </a-modal>
+              </div>
+              <a-icon type="camera" :style="{color: '#707070'}" />
+            </a-popover>
+          </a-tooltip>
         </a-input>
       </a-col>
       <a-col flex="15%">
         <div id="search-criteria">
           <a-radio-group
             id="search-radio-item"
-            default-value="a"
-            button-style="solid">
+            v-model="filterData.submissionType"
+            default-value="lost"
+            button-style="solid"
+            @change="onChange">
             <div
               id="search-radio-item-mask"
               ref="slider" />
             <a-radio-button
-              value="a"
+              value="lost"
               @click="changeSearchCriteria(0)">
               失物招领
             </a-radio-button>
             <a-radio-button
-              value="b"
+              value="find"
               @click="changeSearchCriteria(1)">
               寻物启事
             </a-radio-button>
@@ -49,16 +80,91 @@
   </div>
 </template>
 <script>
+import { get } from '@/api/axios'; // 导入http中创建的axios实例
+function getBase64 (file) {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = () => resolve(reader.result);
+    reader.onerror = error => reject(error);
+  });
+}
 export default {
   name: 'Search',
+  data () {
+    return {
+      url: this.HOME + '/imageSearch',
+      filterData: {
+        submissionType: 'lost',
+        description: null,
+      },
+      visible: false,
+      previewVisible: false,
+      previewImage: '',
+      fileList: [],
+    };
+  },
+  computed: {
+    searchCriteria () {
+      return this.$store.state.goodsItem.searchCriteria;
+    },
+    itemArr () {
+      return this.$store.state.goodsItem.itemArr;
+    },
+  },
+  watch: {
+    searchCriteria: {
+      handler (newVal) {
+        this.init();
+      },
+      deep: true,
+    },
+  },
   methods: {
+    init () {
+      // this.$store.commit('changeSpinStatus', true);
+      // const url = '/goods';
+      // const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
+      // this.$store.commit('setGoodsItem', res.content);
+      // setTimeout(() => {
+      //   this.$store.commit('changeSpinStatus', false);
+      // }, 300);
+      this.$store.dispatch('init');
+    },
+    handleSearch () {
+      this.$store.commit('setSearchCriteria', this.filterData);
+    },
+    onChange (e) {
+      this.filterData.submissionType = e.target.value;
+      this.$store.commit('setSearchCriteria', this.filterData);
+    },
     changeSearchCriteria (index) {
       this.$refs.slider.style.transform = `translateX(${index * 97.5}px)`;
+    },
+    handleCancel () {
+      this.previewVisible = false;
+    },
+    async handlePreview (file) {
+      if (!file.url && !file.preview) {
+        file.preview = await getBase64(file.originFileObj);
+      }
+      this.previewImage = file.url || file.preview;
+      this.previewVisible = true;
+    },
+    handleChange ({ file, fileList, event }) {
+      console.log('file', file);
+      if (file && file.response && file.response.content) {
+        this.$store.commit('setGoodsItem', file.response.content);
+      }
+      this.fileList = fileList;
     },
   },
 };
 </script>
 <style lang="scss" scoped>
+/deep/ .ant-upload.ant-upload-select-picture-card{
+  margin: 0px !important;
+}
 #search{
   // transition: transform 0.5s ease;
   // transition: width 0.8s ease;

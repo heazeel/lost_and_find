@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-03-04 18:15:42
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-04 22:50:03
+ * @LastEditTime: 2021-04-21 02:17:14
 -->
 <template>
   <div class="amap-wrapper">
@@ -18,15 +18,15 @@
       :expand-zoom-range="true"
       class="amap-demo">
       <el-amap-marker v-for="(marker, index) in markers"
-        :key="index"
+        :key="`marker${index}`"
         :position="marker.position"
-        :vid="index"></el-amap-marker>
+        :vid="`marker${index}`"></el-amap-marker>
       <el-amap-polygon v-for="(polygon, index) in polygons"
-        :key="index"
+        :key="`polygon${index}`"
         :ref="`polygon_${index}`"
         :fill-opacity="0"
         stroke-color="#FF0000"
-        :vid="index"
+        :vid="`polygon${index}`"
         :path="polygon.path"
         :draggable="polygon.draggable"
         :events="polygon.events"></el-amap-polygon>
@@ -38,6 +38,12 @@ import { AMapManager, lazyAMapApiLoaderInstance } from 'vue-amap';
 let amapManager = new AMapManager();
 export default {
   name: 'SmallMap',
+  props: {
+    lngLat: {
+      type: Array,
+      default: () => { []; },
+    },
+  },
   data () {
     let vm = this;
     return {
@@ -51,7 +57,7 @@ export default {
       },
       plugin: [{
         pName: 'MapType',
-        defaultType: 1,
+        defaultType: 0,
         showTrafic: false,
         events: {
           init (o) {
@@ -91,6 +97,14 @@ export default {
         },
       ],
     };
+  },
+  mounted () {
+    console.log(this.lngLat);
+    if (this.lngLat && this.lngLat.length != 0) {
+      this.markers = [{
+        position: this.lngLat,
+      }];
+    }
   },
   methods: {
     setMarker (lng, lat) {

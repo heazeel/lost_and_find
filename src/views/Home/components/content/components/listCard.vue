@@ -3,115 +3,144 @@
  * @Author: hezhijie
  * @Date: 2021-02-18 15:00:40
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-04 13:34:23
+ * @LastEditTime: 2021-05-27 23:02:49
 -->
 <template>
-  <a-layout-content
-    id="main-content">
-    <div v-for="(item, index) in itemArr"
-      :id="`item${index}`"
-      :key="index"
-      class="item-card"
-      @click="showDetail(item)">
-      <a-card
-        style="transform: translate(0%, 0%)"
-        :body-style="{}">
-        <img
-          slot="cover"
-          alt="example"
-          :src="item.photos.split(',')[0]">
-        <a-card-meta id="meta1" :title="item.type">
-        </a-card-meta>
-        <a-card-meta id="meta2" :title="item.title">
-          <template slot="description">
-            {{ item.date }}
-          </template>
-        </a-card-meta>
-      </a-card>
-      <div class="card-mask">
-        <p>{{ item.description }}</p>
-        <p>{{ item.positionArea }}</p>
-        <p>{{ item.positionDetail }}</p>
-        <p>{{ item.userName }}</p>
-      </div>
+  <div id="main-content">
+    <div id="empty-container">
+      <a-empty v-show="isEmpty">
+        <span slot="description">暂无数据</span>
+      </a-empty>
     </div>
+    <ul @click="showDetail">
+      <li v-for="(item, index) in itemArr"
+        :id="`item${index}`"
+        :key="item.goodsId"
+        class="item-card"
+        :data-index="index">
+        <a-card>
+          <img
+            slot="cover"
+            alt="example"
+            :src="item.photos.split(',')[0]">
+          <a-card-meta id="meta1" :title="item.type">
+          </a-card-meta>
+          <a-card-meta id="meta2" :title="item.title">
+            <template slot="description">
+              {{ item.date }}
+            </template>
+          </a-card-meta>
+        </a-card>
+        <div class="card-mask">
+          <p><span>物品描述：</span>{{ item.description }}</p>
+          <p><span>区域：</span>{{ item.positionArea }}</p>
+          <p><span>详细位置：</span>{{ item.positionDetail }}</p>
+          <p><span>发布者：</span>{{ item.userName }}</p>
+        </div>
+      </li>
+    </ul>
     <Drawer :visible="visible" :detail-data="detailData" @close="closeDrawer" />
-  </a-layout-content>
+  </div>
 </template>
 <script>
 import { get } from '@/api/axios'; // 导入http中创建的axios实例
 import Drawer from './drawer';
 export default {
   components: {
-    Drawer: () => import('./drawer'),
+    Drawer,
   },
   data () {
     return {
       showType: 0, // 0代表列表模式， 1代表地图模式
       timer: false,
       screenWidth: document.body.clientWidth,
-      itemArr: this.$store.state.goodsItem.itemArr,
       visible: false,
       detailData: {
         photos: '',
       },
+      isEmpty: true,
     };
   },
+  computed: {
+    itemArr () {
+      return this.$store.state.goodsItem.itemArr;
+    },
+  },
   watch: {
-    'screenWidth': {
-      handler (val) {
-      // 为了避免频繁触发resize函数导致页面卡顿，使用定时器
-        if (!this.timer) {
-          // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
-          this.screenWidth = val;
-          this.timer = true;
-          const that = this;
-          const newArr = [];
-          setTimeout(function () {
-            if (that.screenWidth > 1900) {
-              that.listArrangement(newArr, 5);
-            } else if (that.screenWidth > 1300 && that.screenWidth <= 1900) {
-              that.listArrangement(newArr, 4);
-            } else if (that.screenWidth > 965 && that.screenWidth <= 1300) {
-              that.listArrangement(newArr, 3);
-            } else if (that.screenWidth > 665 && that.screenWidth <= 965) {
-              that.listArrangement(newArr, 2);
-            } else if (that.screenWidth <= 665) {
-              that.listArrangement(newArr, 1);
-            }
-            that.timer = false;
-          }, 400);
-        }
-      },
-      immediate: true,
+    itemArr (val) {
+      if (val.length != 0) {
+        this.isEmpty = false;
+        const that = this;
+        const newArr = [];
+        this.$nextTick(() => {
+          if (that.screenWidth > 1900) {
+            that.listArrangement(newArr, 5);
+          } else if (that.screenWidth > 1300 && that.screenWidth <= 1900) {
+            that.listArrangement(newArr, 4);
+          } else if (that.screenWidth > 965 && that.screenWidth <= 1300) {
+            that.listArrangement(newArr, 3);
+          } else if (that.screenWidth > 665 && that.screenWidth <= 965) {
+            that.listArrangement(newArr, 2);
+          } else if (that.screenWidth <= 665) {
+            that.listArrangement(newArr, 1);
+          }
+        });
+      }
+      else {
+        this.isEmpty = true;
+      }
     },
   },
   created () {
-    this.init();
+    this.initData();
   },
   mounted () {
     const that = this;
     window.onresize = () => {
-      window.screenWidth = document.body.clientWidth;
-      that.screenWidth = window.screenWidth;
+      that.screenWidth = document.body.clientWidth;
+      if (!that.timer) {
+        // 一旦监听到的screenWidth值改变，就将其重新赋给data里的screenWidth
+        // this.screenWidth = val;
+        that.timer = true;
+        // const that = this;
+        const newArr = [];
+        setTimeout(function () {
+          if (that.screenWidth > 1900) {
+            that.listArrangement(newArr, 5);
+          } else if (that.screenWidth > 1300 && that.screenWidth <= 1900) {
+            that.listArrangement(newArr, 4);
+          } else if (that.screenWidth > 965 && that.screenWidth <= 1300) {
+            that.listArrangement(newArr, 3);
+          } else if (that.screenWidth > 665 && that.screenWidth <= 965) {
+            that.listArrangement(newArr, 2);
+          } else if (that.screenWidth <= 665) {
+            that.listArrangement(newArr, 1);
+          }
+          that.timer = false;
+        }, 400);
+      }
     };
-    this.scroll();
+    // this.scroll();
   },
   methods: {
-    async init () {
-      const url = this.HOME + '/goods';
+    // 获取物品信息数据
+    async initData () {
+      const url = '/goods';
       const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
       this.$store.commit('setGoodsItem', res.content);
-      this.itemArr = this.$store.state.goodsItem.itemArr;
     },
-    listArrangement (itemArr, section) {
+    // 列表响应式布局
+    listArrangement (newArr, section) {
       for (let i = 0; i < this.itemArr.length; i += section) {
-        itemArr.push(this.itemArr.slice(i, i + section));
+        newArr.push(this.itemArr.slice(i, i + section));
       }
       let count = 0;
-      for (let i = 0; i < itemArr.length; i++) {
-        for (let j = 0; j < itemArr[i].length; j++) {
-          document.getElementById('item' + count).style.transform = `translate(${j * 100}%, ${i * 100}%)`;
+      for (let i = 0; i < newArr.length; i++) {
+        for (let j = 0; j < newArr[i].length; j++) {
+          if (document.getElementById('item' + count)) {
+            document.getElementById('item' + count).style.transform = `translate(${j * 100}%, ${i * 100}%)`;
+          }
+          // this.$refs[`item${count}`].style = `transform: translate(${j * 100}%, ${i * 100}%)`;
           count++;
         }
       }
@@ -134,10 +163,12 @@ export default {
         }
       }, 50), false);
     },
-    showDetail (val) {
+    showDetail (e) {
       this.visible = true;
-      this.detailData = val;
-      console.log(val);
+      if (e.target.offsetParent.nodeName.toLowerCase() === 'li') {
+        const index = parseInt(e.target.offsetParent.dataset.index);
+        this.detailData = this.itemArr[index];
+      }
     },
     closeDrawer () {
       this.visible = false;
@@ -163,19 +194,29 @@ export default {
      @media screen and (max-width: 665px) { @content; }
   }
 }
-.ant-layout-content{
+#main-content{
   position: relative;
   background-color: rgb(255, 255, 255);
-  overflow: auto;
+  // overflow: auto;
   height: 100%;
   max-width: 2968px;
   box-sizing: border-box;
-  margin: 0px 10px 0px 20px;
+  margin: 14px 15px 0px 20px;
+  #empty-container{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    .ant-empty{
+      transform: translateY(-50px);
+    }
+  }
   .item-card{
     position: absolute;
+    transition: transform 0.3s ease;
     left: 0;
     top: 0;
-    padding: 10px;
     border: none;
     cursor: pointer;
     @include screen(level1) {
@@ -193,13 +234,35 @@ export default {
     @include screen(level5) {
       width: 100%;
     }
+    &::before {
+      content: '';
+      padding-top: 95%;
+      float: left;
+    }
+    &::after {
+      content: '';
+      display: block;
+      clear: both;
+    }
     .ant-card{
       border: 0px;
+      height: 100%;
+      width: 95%;
+      position: absolute;
+      left: 0;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      margin: auto;
       /deep/ .ant-card-cover{
-        height: 280px;
+        // height: 280px;
+        height: 80%;
         position: relative;
+        // overflow: hidden;
         img{
-          object-fit: fill;
+          height: 100%;
+          width: 100%;
+          object-fit: cover;
           border-radius: 5px;
           filter: none;
         }
@@ -207,7 +270,8 @@ export default {
       /deep/ .ant-card-body{
         position: relative;
         // width: calc(100% - 2px);
-        min-height: 55px;
+        // min-height: 55px;
+        height: 20%;
         padding: 10px;
         // box-shadow: 1px 1px 10px 1px #e8e8e8;
         margin: auto;
@@ -233,17 +297,27 @@ export default {
     }
     .card-mask{
       position: absolute;
-      top: 10px;
+      top: 0;
       left: 0;
       right: 0;
       margin: auto;
       width: calc(100% - 20px);
-      height: 280px;
+      height: 80%;
       background-color: rgba(0,0,0,0.3);
       transition: opacity ease 0.3s;
       opacity: 0;
       border-radius: 5px;
       color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: space-around;
+      font-size: 16px;
+      span{
+        color: #FFF;
+        font-weight: bold;
+        font-size: 18px;
+      }
     }
   }
   .item-card:hover > .card-mask{

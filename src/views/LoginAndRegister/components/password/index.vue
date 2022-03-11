@@ -3,12 +3,14 @@
  * @Author: hezhijie
  * @Date: 2021-02-23 16:20:47
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-01 23:01:13
+ * @LastEditTime: 2021-04-21 10:33:31
 -->
 <template>
-  <div class="login-content">
+  <div class="login-and-register-container">
     <div class="tips-container">
-      <h1>输入您的密码</h1>
+      <div class="title-name">
+        输入您的密码
+      </div>
       <div class="info-container">
         <div class="photo" />
         <div class="account-info">
@@ -24,10 +26,10 @@
         :label-col="{span: 2, offset: 0 }"
         :wrapper-col="{ span: 24, offset: 0}"
         style="margin-bottom: 40px;">
-        <a-input-password v-model="form.password" />
+        <a-input-password v-model="form.password" @keyup.enter="login" />
       </a-form-item>
       <a-form-item>
-        <div style="width: fit-content; float: left">
+        <div style="width: fit-content; width: -moz-fit-content; float: left">
           <a-switch v-model="delivery" />
           <span style="margin-left: 10px;">保持登陆状态</span>
         </div>
@@ -44,15 +46,17 @@
         <a class="link">重置您的密码</a>
       </a-form-item>
       <a-form-item>
-        <a
-          class="link"
-          @click="$store.commit('goToInputPassword')">登录到其他账户</a>
+        <router-link class="link" to="account">
+          登录到其他账户
+        </router-link>
       </a-form-item>
     </a-form>
   </div>
 </template>
 <script>
 import { post } from '@/api/axios'; // 导入http中创建的axios实例
+import { mapState, mapActions } from 'vuex';
+// const userInfo = localStorage.getItem('userInfo') && JSON.parse(localStorage.getItem('userInfo'));
 export default {
   data () {
     return {
@@ -62,23 +66,33 @@ export default {
         account: null,
         password: null,
       },
+      username: 'heazeel',
+      password: 'h456827913',
+      nickname: '',
     };
   },
   beforeCreate () {
     this.form = this.$form.createForm(this, { name: 'register' });
   },
   mounted () {
-    this.form.account = localStorage.getItem('account');
+    this.form.account = sessionStorage.getItem('account');
   },
   methods: {
+    ...mapActions(['onLogin', 'setRegisterFlag', 'onRegister']),
     async login () {
-      var url = this.HOME + '/user';
+      var url = '/user';
       this.loading = true;
       const res = await post(url, { identifier: this.form.account, credential: this.form.password });
       this.loading = false;
       if (res.code === 200) {
         this.$message.success(`欢迎用户 ${this.form.account}!`);
-        sessionStorage.setItem('userId', res.content.userId);
+        localStorage.setItem('userId', res.content.userId);
+        localStorage.setItem('userName', res.content.userName);
+        // 环信登录
+        this.onLogin({
+          username: res.content.userId,
+          password: this.form.password,
+        });
         this.$router.push('/home/list');
       } else {
         this.$message.error(res.msg);

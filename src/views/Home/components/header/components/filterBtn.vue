@@ -3,7 +3,7 @@
  * @Author: hezhijie
  * @Date: 2021-01-31 18:50:25
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-02 19:07:03
+ * @LastEditTime: 2021-04-21 10:01:09
 -->
 <template>
   <div
@@ -15,20 +15,15 @@
       justify="space-between">
       <a-col
         id="col-left"
-        :span="12">
+        :span="20">
         <a-dropdown
           :get-popup-container="getPopupContainer"
           :trigger="['click']">
           <a-menu
-            slot="overlay">
-            <a-menu-item key="1">
-              <a-icon type="user" />1st menu item
-            </a-menu-item>
-            <a-menu-item key="2">
-              <a-icon type="user" />2nd menu item
-            </a-menu-item>
-            <a-menu-item key="3">
-              <a-icon type="user" />3rd item
+            slot="overlay"
+            @click="handleTypeMenuClick">
+            <a-menu-item v-for="(item) in typeArr" :key="item">
+              {{ item }}
             </a-menu-item>
           </a-menu>
           <a-button>
@@ -43,22 +38,13 @@
             <a-icon type="caret-down" />
           </a-button>
         </a-dropdown>
-        <a-cascader :options="options" @change="onChange">
+        <a-cascader :options="options" change-on-select @change="handlePositionMenuClick">
           <a-dropdown
             id="position"
             :get-popup-container="getPopupContainer"
             :trigger="['click']">
             <a-menu
               slot="overlay">
-            <!-- <a-menu-item key="1">
-              <a-icon type="user" />1st menu item
-            </a-menu-item>
-            <a-menu-item key="2">
-              <a-icon type="user" />2nd menu item
-            </a-menu-item>
-            <a-menu-item key="3">
-              <a-icon type="user" />3rd item
-            </a-menu-item> -->
             </a-menu>
             <a-button>
               <svg
@@ -77,15 +63,10 @@
           :get-popup-container="getPopupContainer"
           :trigger="['click']">
           <a-menu
-            slot="overlay">
-            <a-menu-item key="1">
-              <a-icon type="user" />1st menu item
-            </a-menu-item>
-            <a-menu-item key="2">
-              <a-icon type="user" />2nd menu item
-            </a-menu-item>
-            <a-menu-item key="3">
-              <a-icon type="user" />3rd item
+            slot="overlay"
+            @click="handleTimeMenuClick">
+            <a-menu-item v-for="(item) in timeArr" :key="item">
+              {{ item }}
             </a-menu-item>
           </a-menu>
           <a-button>
@@ -100,10 +81,27 @@
             <a-icon type="caret-down" />
           </a-button>
         </a-dropdown>
+        <h1 style="margin-left: 50px; font-size:17px; font-weight:bold">
+          筛选条件：
+        </h1>
+        <div id="tag-container">
+          <a-tag v-model="clearAllTag" color="#f50" @click="handleClearTagChange">
+            清除全部
+          </a-tag>
+          <a-tag v-model="visible.type" closable @close="tagClose('type')">
+            {{ filterData.type }}
+          </a-tag>
+          <a-tag v-model="visible.positionArea" closable @close="tagClose('positionArea')">
+            {{ filterData.positionArea }}
+          </a-tag>
+          <a-tag v-model="visible.time" closable @close="tagClose('time')">
+            {{ filterData.time }}
+          </a-tag>
+        </div>
       </a-col>
       <a-col
         id="col-right"
-        :span="12">
+        :span="4">
         <a-button
           icon="search"
           :loading="loading"
@@ -115,6 +113,15 @@
   </div>
 </template>
 <script>
+const type = [
+  '证件', '钱包', '手机', '钥匙', '银行卡', '校园卡', '手提包', '笔记本',
+  '电脑', '首饰', '衣服', '耳机', '相机', '电动车', '自行车', '其他',
+];
+const time = [
+  '今天', '3天内', '7天内', '15天内', '1个月内', '3个月内', '6个月内', '1年内',
+];
+import position from './positionNode.js';
+import { get } from '@/api/axios'; // 导入http中创建的axios实例
 export default {
   name: 'FilterBtn',
   data () {
@@ -125,41 +132,39 @@ export default {
         'time': false,
       },
       loading: false,
-      options: [
-        {
-          value: 'zhejiang',
-          label: 'Zhejiang',
-          children: [
-            {
-              value: 'hangzhou',
-              label: 'Hangzhou',
-              children: [
-                {
-                  value: 'xihu',
-                  label: 'West Lake',
-                },
-              ],
-            },
-          ],
-        },
-        {
-          value: 'jiangsu',
-          label: 'Jiangsu',
-          children: [
-            {
-              value: 'nanjing',
-              label: 'Nanjing',
-              children: [
-                {
-                  value: 'zhonghuamen',
-                  label: 'Zhong Hua Men',
-                },
-              ],
-            },
-          ],
-        },
-      ],
+      typeArr: type,
+      timeArr: time,
+      options: position,
+      filterData: {
+        type: null,
+        positionArea: null,
+        time: null,
+      },
+      visible: {
+        type: false,
+        positionArea: false,
+        time: false,
+      },
     };
+  },
+  computed: {
+    clearAllTag () {
+      if (this.visible.type || this.visible.positionArea || this.visible.time) {
+        return true;
+      } else {
+        return false;
+      }
+    },
+    searchCriteria () {
+      return this.$store.state.goodsItem.searchCriteria;
+    },
+  },
+  watch: {
+    searchCriteria: {
+      handler (newVal) {
+        this.init();
+      },
+    },
   },
   methods: {
     getPopupContainer () {
@@ -169,19 +174,19 @@ export default {
       this.loading = true;
       this.$store.commit('switchListType');
       if (!this.$store.state.showMap) {
-        this.$router.push('/home/list');
-        // document.getElementById('search').className = 'search-down';
-        // document.getElementById('filter-btn').className = 'filter-btn-down';
-        // document.getElementsByClassName('ant-layout-header')[0].style.height = '216px';
-        // document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2';
-        // document.getElementById('home-content').style.top = '217px';
+        this.$router.push('list');
+        document.getElementById('search').className = 'search-down';
+        document.getElementById('filter-btn').className = 'filter-btn-down';
+        document.getElementById('home-header').style.height = '216px';
+        document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2';
+        document.getElementById('home-content').style.top = '217px';
       } else {
-        // document.getElementById('search').className = 'search-up';
-        // document.getElementById('filter-btn').className = 'filter-btn-up';
-        // document.getElementsByClassName('ant-layout-header')[0].style.height = '140px';
-        // document.getElementById('home-content').style.top = '140px';
-        // document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC';
-        setTimeout(this.$router.push('/home/map'), 5000);
+        document.getElementById('search').className = 'search-up';
+        document.getElementById('filter-btn').className = 'filter-btn-up';
+        document.getElementById('home-header').style.height = '140px';
+        document.getElementById('home-content').style.top = '140px';
+        document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC';
+        this.$router.push('map');
       }
       setTimeout(() => {
         this.loading = false;
@@ -189,6 +194,61 @@ export default {
     },
     onChange () {
       console.log();
+    },
+    init () {
+      // this.$store.commit('changeSpinStatus', true);
+      // const url = '/goods';
+      // let searchCriteria = JSON.parse(JSON.stringify(this.$store.state.goodsItem.searchCriteria));
+      // const res = await get(url, { ...searchCriteria });
+      // this.$store.commit('setGoodsItem', res.content);
+      // this.$store.commit('changeSpinStatus', false);
+      this.$store.dispatch('init');
+    },
+    handleTypeMenuClick (e) {
+      if (this.visible.type) {
+        this.filterData.type = e.key;
+      } else {
+        this.visible.type = true;
+        this.filterData.type = e.key;
+      }
+      this.$store.commit('setSearchCriteria', this.filterData);
+    },
+    handlePositionMenuClick (value) {
+      if (this.visible.positionArea) {
+        this.filterData.positionArea = value.join('-');
+      } else {
+        this.visible.positionArea = true;
+        this.filterData.positionArea = value.join('-');
+      }
+      this.$store.commit('setSearchCriteria', this.filterData);
+    },
+    handleTimeMenuClick (e) {
+      if (this.visible.time) {
+        this.filterData.time = e.key;
+      } else {
+        this.visible.time = true;
+        this.filterData.time = e.key;
+      }
+      this.$store.commit('setSearchCriteria', this.filterData);
+    },
+    tagClose (tagName) {
+      this.visible[tagName] = false;
+      this.filterData[tagName] = null;
+      console.log(this.filterData);
+      this.$store.commit('setSearchCriteria', this.filterData);
+    },
+    handleClearTagChange () {
+      for (let i in this.filterData) {
+        if (this.filterData.hasOwnProperty(i)) {
+          this.filterData[i] = null;
+        }
+      }
+      for (let i in this.visible) {
+        if (this.filterData.hasOwnProperty(i)) {
+          this.visible[i] = false;
+        }
+      }
+      this.$store.commit('setSearchCriteria', this.filterData);
     },
   },
 };
@@ -202,8 +262,10 @@ export default {
     width: 100%;
     #col-left{
       padding-left:20px;
+      display: flex;
+      align-items: center;
       .ant-dropdown-trigger{
-        float: left;
+        // float: left;
         height: 38px;
         min-width: 100px;
         padding: 0 0px;
@@ -263,6 +325,14 @@ export default {
         i{
           transform-origin: 50% 48%;
           transform: rotate(180deg);
+        }
+      }
+      #tag-container{
+        width: fit-content;
+        width: -moz-fit-content;
+        .ant-tag{
+          margin: 0 5px;
+          padding: 5px;
         }
       }
     }

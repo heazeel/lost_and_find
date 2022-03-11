@@ -3,22 +3,24 @@
  * @Author: hezhijie
  * @Date: 2021-03-04 18:46:15
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-04-04 19:42:08
+ * @LastEditTime: 2021-04-21 11:28:54
 -->
 <template>
   <a-modal
     v-model="$store.state.modal.modalVisible"
-    :title="$store.state.modal.modalTitle"
+    :title="`${$store.state.modal.modalTitle}（${$store.state.modal.createOrUpdate == 'create' ? '新建' : '编辑'}）`"
     centered
     :destroy-on-close="true"
     :width="1300"
     :mask-closable="false"
     :footer="null"
+    :after-close="clearAllData"
+    :z-index="1000"
     @ok="() => ($store.commit('showModal', null))"
     @cancel="() => ($store.commit('showModal', null))">
     <a-row style="height: 500px">
       <a-col :span="12" style="height: 500px">
-        <SmallMap @getLngLat="getLngLat" />
+        <SmallMap :lng-lat="lngLat" @getLngLat="getLngLat" />
       </a-col>
       <a-col :span="1" style="height: 500px"></a-col>
       <a-col :span="11" style="height: 500px; overflow: auto">
@@ -44,20 +46,20 @@
               </a-form-item>
             </a-col>
             <a-col :span="12" :pull="2">
-              <a-form-item :label="typeForm.collectDate" :label-col="{span: 8, offset: 0}" :wrapper-col="{span: 12, offset: 0}">
+              <a-form-item label="拾获日期" :label-col="{span: 8, offset: 0}" :wrapper-col="{span: 12, offset: 0}">
                 <a-date-picker v-decorator="['date', validatorRules.date]" placeholder="请选择" />
               </a-form-item>
             </a-col>
           </a-row>
           <a-form-item label="物品描述">
             <a-textarea
-              v-decorator="['description', validatorRules.discription]"
+              v-decorator="['description', validatorRules.description]"
               placeholder="请输入物品的描述，如：大小、颜色、种类、品牌等"
               :auto-size="{ minRows: 3, maxRows: 5 }" />
           </a-form-item>
           <a-form-item label="物品照片">
             <a-upload
-              :data="{folder: typeForm.formType}"
+              :data="{folder: $store.state.modal.modalTitle == '发布失物招领' ? 'lost' : 'find'}"
               :action="url"
               list-type="picture-card"
               :file-list="fileList"
@@ -77,7 +79,7 @@
           <a-form-item label="地点定位">
             <a-input v-decorator="['positionLngLat', validatorRules.positionLngLat]" disabled placeholder="请在左侧地图上标出地点位置" />
           </a-form-item>
-          <a-form-item :label="typeForm.collectArea">
+          <a-form-item label="拾获区域">
             <a-tree-select
               ref="treeSelect"
               v-decorator="['positionArea', validatorRules.positionArea]"
@@ -113,16 +115,16 @@
 <script>
 import SmallMap from './smallMap';
 import position from './positionNode.js';
-const lostForm = {
-  formType: 'lost',
-  collectDate: '拾获日期',
-  collectArea: '拾获区域',
-};
-const findForm = {
-  formType: 'find',
-  collectDate: '丢失日期',
-  collectArea: '丢失区域',
-};
+// const lostForm = {
+//   formType: 'lost',
+//   collectDate: '拾获日期',
+//   collectArea: '拾获区域',
+// };
+// const findForm = {
+//   formType: 'find',
+//   collectDate: '丢失日期',
+//   collectArea: '丢失区域',
+// };
 const type = [
   '证件', '钱包', '手机', '钥匙', '银行卡', '校园卡', '手提包', '笔记本',
   '电脑', '首饰', '衣服', '耳机', '相机', '电动车', '自行车', '其他',
@@ -148,7 +150,8 @@ function getBase64 (file) {
     reader.onerror = error => reject(error);
   });
 }
-import { post } from '@/api/axios'; // 导入http中创建的axios实例
+import { post, get } from '@/api/axios'; // 导入http中创建的axios实例
+import * as moment from 'moment';
 export default {
   name: 'Modal',
   components: {
@@ -156,6 +159,9 @@ export default {
   },
   data () {
     return {
+      createOrUpdate: null,
+      lngLat: null,
+      goodsId: null,
       loading: false,
       typeForm: null,
       type: type,
@@ -165,7 +171,7 @@ export default {
         title: { rules: [{ max: 32, message: '不能多于32字符' }, { required: true, message: '请输入标题!' }] },
         type: { rules: [{ required: true, message: '请选择类型' }] },
         date: {rules: [{required: true, message: '请填写日期'}]},
-        discription: {rules: [{ max: 150, message: '不能多于150字符' }, {required: true, message: '请填写物品描述'}]},
+        description: {rules: [{ max: 150, message: '不能多于150字符' }, {required: true, message: '请填写物品描述'}]},
         positionLngLat: { rules: [{ required: true, message: '请在左侧地图区域标出地点位置' }] },
         positionArea: { rules: [{ required: true, message: '请选择区域' }] },
         positionDetail: { rules: [{ max: 50, message: '不能多于50字符' }, { required: true, message: '请填写具体位置' }] },
@@ -173,34 +179,80 @@ export default {
       },
       previewVisible: false,
       previewImage: '',
-      fileList: [],
+      fileList: [
+        // {
+        //   uid: '-1',
+        //   status: 'done',
+        //   name: 'image.png',
+        //   url: 'https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/null-img/4d349c342e854bd2868814ded1be6d6b.png',
+        // },
+      ],
       url: this.HOME + '/upload',
     };
+  },
+  computed: {
+    modalVisible () {
+      return this.$store.state.modal.modalVisible;
+    },
+  },
+  watch: {
+    modalVisible (val) {
+      if (val) {
+        this.$nextTick(() => {
+          this.init();
+        });
+      }
+    },
   },
   beforeCreate () {
     this.form = this.$form.createForm(this, { name: 'time_related_controls' });
   },
-  created () {
-    if (this.$store.state.modal.modalTitle == '发布失物招领') {
-      this.typeForm = lostForm;
-    }
-    else {
-      this.typeForm = findForm;
-    }
-  },
+  // created () {
+  //   if (this.$store.state.modal.modalTitle == '发布失物招领') {
+  //     this.typeForm = lostForm;
+  //   }
+  //   else {
+  //     this.typeForm = findForm;
+  //   }
+  // },
   mounted () {
     // this.typeForm = this.$store.state.modal.modalTitle == '发布失物招领' ? lostForm : findForm;
+    // this.init();
   },
-  updated () {
-    console.log('update', this.$store.state.modal.modalTitle);
-    if (this.$store.state.modal.modalTitle == '发布失物招领') {
-      this.typeForm = lostForm;
-    }
-    else {
-      this.typeForm = findForm;
-    }
-  },
+  // updated () {
+  //   if (this.$store.state.modal.modalTitle == '发布失物招领') {
+  //     this.typeForm = lostForm;
+  //   }
+  //   else {
+  //     this.typeForm = findForm;
+  //   }
+  // },
   methods: {
+    init () {
+      console.log(this.$store.state.modal.createOrUpdate);
+      if (this.$store.state.modal.createOrUpdate == 'update') {
+        const data = this.$store.state.modal.itemData;
+        console.log(data);
+        let lnglatArr = data.positionLngLat.split(',');
+        this.lngLat = lnglatArr;
+        let photosArr = [];
+        data.photos.split(',').map((item, index) => {
+          photosArr.push(Object.assign({}, {uid: index, status: 'done', name: item, url: item}));
+        });
+        this.fileList = photosArr;
+        this.goodsId = data.goodsId;
+        this.form.setFieldsValue({
+          ['title']: data.title,
+          ['type']: data.type,
+          ['date']: moment(data.date, 'YYYY-MM-DD'),
+          ['description']: data.description,
+          ['positionLngLat']: `经度: ${lnglatArr[0]} , 纬度: ${lnglatArr[1]}`,
+          ['positionArea']: data.positionArea,
+          ['positionDetail']: data.positionDetail,
+          ['phone']: data.phone,
+        });
+      }
+    },
     async handleSubmit (e) {
       e.preventDefault();
       this.loading = true;
@@ -212,24 +264,34 @@ export default {
         let photos = this.fileList.map((item) => item.response.content).reduce((prev, cur) => prev+ ',' + cur);
         let values = {
           ...fieldsValue,
-          'positionLngLat': fieldsValue['positionLngLat'].split(' ')[0] + ',' + fieldsValue['positionLngLat'].split(' ')[4],
+          'positionLngLat': fieldsValue['positionLngLat'].split(' ')[1] + ',' + fieldsValue['positionLngLat'].split(' ')[4],
           'date': fieldsValue['date'].format('YYYY-MM-DD'),
           'photos': photos,
         };
         Object.assign(formData, values);
-        console.log(values);
         resolve();
       }); });
 
       validate.then(async () => {
-        let url = this.HOME + '/goods';
-        let formType = this.typeForm.formType;
-        const res = await post(url, { ...formData, userId: sessionStorage.getItem('userId'), submissionType: formType });
+        let url = '/goods';
+        let formType = this.$store.state.modal.modalTitle == '失物招领' ? 'lost' : 'find';
+        let _method = this.$store.state.modal.createOrUpdate == 'create' ? null : 'PUT';
+        let goodsId = this.goodsId;
+        const res = await post(url, { ...formData, userId: localStorage.getItem('userId'), goodsId: goodsId, submissionType: formType, _method: _method});
         this.loading = false;
         if (res.code === 200) {
-          this.$message.success('创建成功！');
+          this.$message.success(res.msg);
+          let self = this;
+          setTimeout(async () => {
+            self.$store.commit('showModal', null);
+            self.$store.dispatch('init');
+          }, 500);
         }
       });
+
+      setTimeout(() => {
+        this.loading = false;
+      }, 10000);
     },
     getContainer () {
       return document.getElementById('app');
@@ -276,6 +338,9 @@ export default {
     },
     getLngLat (lng, lat) {
       this.form.setFieldsValue({['positionLngLat']: `经度: ${lng} , 纬度: ${lat}`});
+    },
+    clearAllData () {
+      this.fileList = [];
     },
   },
 };

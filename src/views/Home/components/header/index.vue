@@ -3,23 +3,21 @@
  * @Author: hezhijie
  * @Date: 2021-01-29 21:51:15
  * @LastEditors: hezhijie
- * @LastEditTime: 2021-03-25 12:15:12
+ * @LastEditTime: 2021-04-21 10:34:33
 -->
 <template>
   <div id="home-header">
-    <a-layout-header>
-      <div id="head">
-        <img
-          id="logo"
-          src="../../../../assets/imgs/logo.png"
-          alt="">
-        <Login v-if="account == null" />
-        <PersonInfo v-if="account !== null" />
-      </div>
-      <a-divider />
-      <Search />
-      <FilterBtn />
-    </a-layout-header>
+    <div id="head">
+      <img
+        id="logo"
+        src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/logo.png"
+        alt="">
+      <Login v-if="account == null" />
+      <PersonInfo v-if="account !== null" />
+    </div>
+    <a-divider />
+    <Search />
+    <FilterBtn />
   </div>
 </template>
 <script>
@@ -41,7 +39,7 @@ export default {
     };
   },
   mounted () {
-    this.account = localStorage.getItem('account');
+    this.account = localStorage.getItem('userId');
   },
 };
 </script>
@@ -49,34 +47,33 @@ export default {
 #home-header{
   box-shadow: 0px 2px 2px #F2F2F2;
   transition: all 0.3s ease;
-  .ant-layout-header{
-    height: auto;
-    width: 100%;
-    background-color: white;
-    transition: all 0.3s ease;
-    #head{
-      height: 60px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 30px 0 30px;
-      z-index: 999;
-      // overflow: hidden;
-      #logo{
-        width: 270px;
-        height: auto;
-      }
-      #login{
-        height: fit-content;
-      }
+  height: auto;
+  width: 100%;
+  background-color: white;
+  transition: all 0.3s ease;
+  #head{
+    height: 60px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 30px 0 30px;
+    z-index: 999;
+    // overflow: hidden;
+    #logo{
+      width: 270px;
+      height: auto;
     }
-    #search{
-      margin: 20px 0 20px 0;
-      z-index: 1;
+    #login{
+      height: fit-content;
+      height: -moz-fit-content;
     }
-    #filter-btn{
-      margin-bottom: 20px;
-    }
+  }
+  #search{
+    margin: 20px 0 20px 0;
+    z-index: 1;
+  }
+  #filter-btn{
+    margin-bottom: 20px;
   }
 }
 </style>

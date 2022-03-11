@@ -1,4 +1,5 @@
 // const vuxLoader = require('vux-loader')
+// const webpack = require('webpack');
 const path = require('path');
 const { resolve } = require('path');
 module.exports = {
@@ -7,7 +8,7 @@ module.exports = {
   // 默认情况下，Vue CLI假设您的应用程序将部署在域的根目录下。
   // https://www.my-app.com/。如果应用程序部署在子路径上，则需要使用此选项指定子路径。例如，如果您的应用程序部署在https://www.foobar.com/my-app/，集baseUrl到'/my-app/'.
 
-  publicPath: process.env.NODE_ENV === 'production' ? '' : '/',
+  publicPath: process.env.NODE_ENV === 'production' ? './' : './',
   // outputDir: 在npm run build时 生成文件的目录 type:string, default:'dist'
   outputDir: process.env.NODE_ENV === 'production' ? 'dist' : 'devdist',
 
@@ -52,6 +53,17 @@ module.exports = {
         '@c': path.resolve(__dirname, './src/components'),
         valineJS: resolve('static/valine.js'),
       },
+      plugins: [
+        // 下面是下载的插件的配置
+        // new CompressionWebpackPlugin({
+        //   filename: '[path].gz[query]',
+        //   algorithm: 'gzip',
+        //   test: new RegExp('\\.(' + productionGzipExtensions.join('|') + ')$'),
+        //   threshold: 10240,
+        //   minRatio: 0.8,
+        //   deleteOriginalAssets: false, // 删除原文件
+        // }),
+      ],
     };
   },
 
@@ -59,52 +71,22 @@ module.exports = {
   // 如果您不需要生产时的源映射，那么将此设置为false可以加速生产构建
   productionSourceMap: false,
 
-  // devServer:{type:Object} 3个属性host,port,https
-  // 它支持webPack-dev-server的所有选项
-  // devServer: {
-  // port: 8080, // 端口号
-  // host: '0.0.0.0',
-  // https: false, // https:{type:Boolean}
-  // open: true, //配置自动启动浏览器
-  // proxy: {
-  //   '/devApi':{
-  //     target: "http://www.web-jshtml.cn/productapi/token",
-  //     changeOrigin: true,
-  //     pathRewrite:{
-  //       '^/devApi': ''
-  //     }
-  //   }
-  // }
-  // },
-  // devServer: {
-  //   open: true, //编译完成是否打开网页
-  //   host: '0.0.0.0', //使用指定地址，默认localhost，0.0.0.0代表可以被外界访问
-  //   port: 8080, //访问端口
-  //   https: false,
-  //   hotOnly: false,
-  //   proxy: null, // 设置代理
-  //   overlay:{
-  //       warnings:true,
-  //       errors:true
-  //   },
-  //   before: app => {
-  //   }
-  // },
   devServer: {
     port: 8081,
     host: 'localhost',
     open: true,
     https: false,
-    proxy: {
-      '/api': {
-        target: 'http://localhost:8080/lost_and_find/',
-        ws: true,
-        changeOrigin: true,
-        pathRewrite: {
-          '^/api': '',
-        },
-      },
-    },
+    // proxy: {
+    //   '/api': {
+    //     target: 'http://118.31.59.223:8080/lost-and-find/',
+    //     // target: 'http://localhost:8080/',
+    //     ws: true,
+    //     changeOrigin: true,
+    //     pathRewrite: {
+    //       '^/api': '',
+    //     },
+    //   },
+    // },
   },
   // dev: {
   //   // Paths
@@ -112,18 +94,21 @@ module.exports = {
   //   assetsPublicPath: '/',
   //   proxyTable: { // axios跨域处理
   //     '/api': { // 此处并非和url一致
-  //       target: 'http://localhost:8080/lost_and_find/',
+  //       target: 'http://118.31.59.223:8080/lost-and-find/lost_and_find/',
   //       changeOrigin: true, // 允许跨域
   //       pathRewrite: {
-  //         '^/api': ''
-  //       }
-  //     }
-  //   }
+  //         '^/api': '',
+  //       },
+  //     },
+  //   },
   // },
   css: {
     loaderOptions: {
       sass: {
         prependData: '@import "./src/styles/main.scss";',
+      },
+      less: {
+        javascriptEnabled: true,
       },
     },
     // postcss: {

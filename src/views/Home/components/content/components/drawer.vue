@@ -16,23 +16,26 @@
       padding: '0px',
     }"
     :after-visible-change="afterVisibleChange"
-    @close="onClose">
+    @close="onClose"
+  >
     <a-row>
       <a-col :span="18" style="height: 100vh; overflow: auto;">
         <a-carousel arrows>
           <div
             slot="prevArrow"
             class="custom-slick-arrow"
-            style="left: 10px;zIndex: 1">
+            style="left: 10px;zIndex: 1"
+          >
             <a-icon type="left-circle" />
           </div>
-          <div slot="nextArrow"
-            class="custom-slick-arrow"
-            style="right: 10px">
+          <div slot="nextArrow" class="custom-slick-arrow" style="right: 10px">
             <a-icon type="right-circle" />
           </div>
-          <div v-for="(item, index) in detailData.photos.split(',')" :key="index">
-            <img :src="item">
+          <div
+            v-for="(item, index) in detailData.photos.split(',')"
+            :key="index"
+          >
+            <img :src="item" />
           </div>
         </a-carousel>
         <div id="vcomments"></div>
@@ -50,7 +53,8 @@
             id="connect-btn"
             :style="detailData.userId == userId ? 'visibility: hidden;' : ''"
             type="primary"
-            @click="onChildrenDrawerOpen(detailData.userId)">
+            @click="onChildrenDrawerOpen(detailData.userId)"
+          >
             联系
           </a-button>
         </div>
@@ -59,7 +63,9 @@
           <h1>标题</h1>
           <ul>
             <li>
-              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back3.jpg">
+              <img
+                src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back3.jpg"
+              />
               <div class="content">
                 <p>{{ detailData.title }}</p>
               </div>
@@ -70,13 +76,17 @@
           <h1>物品信息</h1>
           <ul>
             <li>
-              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back1.jpg">
+              <img
+                src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back1.jpg"
+              />
               <div class="content">
                 <p>{{ detailData.type }}</p>
               </div>
             </li>
             <li>
-              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back2.jpg">
+              <img
+                src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back2.jpg"
+              />
               <div class="content">
                 <p>{{ detailData.description }}</p>
               </div>
@@ -87,13 +97,17 @@
           <h1>位置信息</h1>
           <ul>
             <li>
-              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back4.jpg">
+              <img
+                src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back4.jpg"
+              />
               <div class="content">
                 <p>{{ detailData.positionArea }}</p>
               </div>
             </li>
             <li>
-              <img src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back5.jpg">
+              <img
+                src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/btn-back5.jpg"
+              />
               <div class="content">
                 <p>{{ detailData.positionDetail }}</p>
               </div>
@@ -108,21 +122,22 @@
       :width="450"
       :body-style="{
         padding: '0px',
-        height: '100%'
+        height: '100%',
       }"
       :visible="childrenDrawer"
       :after-visible-change="afterChildrenVisibleChange"
-      @close="onChildrenDrawerClose">
+      @close="onChildrenDrawerClose"
+    >
       <!-- <Chat /> -->
       <Message ref="messageList" :signal="true" />
     </a-drawer>
   </a-drawer>
 </template>
 <script>
-import Valine from 'valine';
-import Message from '@/components/chat/message';
-import { mapActions, mapGetters } from 'vuex';
-import { post } from '@/api/axios'; // 导入http中创建的axios实例
+import Valine from "valine";
+import Message from "@/components/chat/message";
+import { mapActions, mapGetters } from "vuex";
+import { post } from "@/api/axios"; // 导入http中创建的axios实例
 export default {
   components: {
     Message,
@@ -134,62 +149,63 @@ export default {
     },
     detailData: {
       type: Object,
-      default: () => { Object.create({title: null, photos: ''}); },
+      default: () => {
+        Object.create({ title: null, photos: "" });
+      },
     },
   },
-  data () {
+  data() {
     return {
       childrenDrawer: false,
       signal: true,
       userId: null,
     };
   },
-  created () {
+  created() {
     // console.log('created');
     // console.log(this.detailData);
-    this.userId = localStorage.getItem('userId');
+    this.userId = localStorage.getItem("userId");
   },
-  mounted () {
+  mounted() {
     // console.log(this.detailData);
   },
   methods: {
-    ...mapActions(['addfirend']),
-    afterVisibleChange (val) {
+    ...mapActions(["addfirend"]),
+    afterVisibleChange(val) {
       this.initValine();
     },
-    afterChildrenVisibleChange (val) {
+    afterChildrenVisibleChange(val) {
       const option = {
         id: this.detailData.userId, // 联系人id
-        params: localStorage.getItem('userInfo').userId, // 自己的id
+        params: localStorage.getItem("userInfo").userId, // 自己的id
       };
       this.addfirend(option);
-      this.$refs.messageList.select({name: this.detailData.userId});
+      this.$refs.messageList.select({ name: this.detailData.userId });
     },
-    async onChildrenDrawerOpen (userId) {
-      if (localStorage.getItem('userId') !== null) {
+    async onChildrenDrawerOpen(userId) {
+      if (localStorage.getItem("userId") !== null) {
         this.childrenDrawer = true;
         // let url = '/sendEmail';
         // const res = await post(url, { userId: userId, _method: 'PUT'});
-      }
-      else {
-        this.$message.warning('请先登录！');
+      } else {
+        this.$message.warning("请先登录！");
       }
     },
-    onChildrenDrawerClose () {
+    onChildrenDrawerClose() {
       this.childrenDrawer = false;
     },
-    onClose () {
-      this.$emit('close');
+    onClose() {
+      this.$emit("close");
     },
-    initValine () {
+    initValine() {
       let self = this;
       new Valine({
-        el: '#vcomments',
-        appId: 'URmdycfso0YukNoucAfLUw4e-gzGzoHsz',
-        appKey: 'YIjBiPpilaNgOV2mv8oDL3gz',
-        placeholder: '有线索的小伙伴快举个爪！',
+        el: "#vcomments",
+        appId: "URmdycfso0YukNoucAfLUw4e-gzGzoHsz",
+        appKey: "YIjBiPpilaNgOV2mv8oDL3gz",
+        placeholder: "有线索的小伙伴快举个爪！",
         visitor: true,
-        avatar: 'wavatar',
+        avatar: "wavatar",
         path: self.detailData.goodsId,
         // path: self.detailData.goodsId,
       });
@@ -198,19 +214,19 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/deep/ .ant-drawer-content-wrapper{
-  .ant-drawer-content{
+::v-deep .ant-drawer-content-wrapper {
+  .ant-drawer-content {
     border-top-right-radius: 10px;
     border-bottom-right-radius: 10px;
   }
-  .ant-carousel{
+  .ant-carousel {
     .slick-slide {
       text-align: center;
       height: 68vh;
       line-height: 68vh;
       background: #000;
       overflow: hidden;
-      img{
+      img {
         width: auto;
         height: 68vh;
         margin: auto;
@@ -221,72 +237,72 @@ export default {
       width: 35px;
       height: 35px;
       font-size: 35px;
-      color: #FFF;
+      color: #fff;
       opacity: 0.4;
       background-color: #000;
-      border-radius:35px;
+      border-radius: 35px;
     }
     .custom-slick-arrow:before {
       display: none;
     }
     .custom-slick-arrow:hover {
-      opacity: 0.7
+      opacity: 0.7;
     }
     .custom-slick-arrow:hover {
       opacity: 0.7;
     }
   }
-  #goods-info-container{
+  #goods-info-container {
     overflow: hidden;
-    border-left: 1px solid #E8E8E8;
+    border-left: 1px solid #e8e8e8;
     height: 100vh;
-    #person-info-container{
+    #person-info-container {
       display: flex;
       align-items: center;
       padding: 15px;
       justify-content: space-around;
-      #person-info{
+      #person-info {
         display: flex;
         align-items: center;
-        img{
+        img {
           width: 50px;
           height: 50px;
           border-radius: 25px;
           margin: 10px 15px 10px 0px;
           object-fit: cover;
         }
-        #person-detail{
+        #person-detail {
           display: flex;
           flex-direction: column;
-          #user-name{
+          #user-name {
             font-size: 18px;
             font-weight: bold;
             color: #191919;
           }
-          #user-account{
+          #user-account {
             font-size: 14px;
             color: #696969;
           }
         }
       }
-      #connect-btn{
+      #connect-btn {
         background-color: $mainColor;
         border-radius: 20px;
         border-color: $mainColor;
-        &:hover{
+        &:hover {
           border-color: $mainColor;
           opacity: 0.8;
         }
       }
     }
-    .goods-info{
+    .goods-info {
       padding: 20px 30px 0 30px;
-      h1{
+      h1 {
         margin-bottom: 10px;
         color: #959595;
       }
-      ul{
-        li{
+      ul {
+        li {
           position: relative;
           min-height: 50px;
           height: fit-content;
@@ -297,7 +313,7 @@ export default {
           overflow: hidden;
           background-color: #330000;
           margin-bottom: 10px;
-          img{
+          img {
             display: block;
             -o-object-fit: cover;
             object-fit: cover;
@@ -312,7 +328,7 @@ export default {
             bottom: 0;
             z-index: 1;
           }
-          .content{
+          .content {
             height: fit-content;
             height: -moz-fit-content;
             width: 100%;
@@ -320,12 +336,12 @@ export default {
             z-index: 10;
             background-color: rgba(0, 0, 0, 0.7);
             padding: 15px 10px;
-            p{
-              color: #FFF;
+            p {
+              color: #fff;
               font-size: 16px;
               text-align: center;
             }
-            &:hover{
+            &:hover {
               background-color: rgba(0, 0, 0, 0.6);
             }
           }
@@ -354,11 +370,11 @@ export default {
     width: 5px;
   }
   ::-webkit-scrollbar-thumb {
-    background: rgba(0,0,0,0.1);
+    background: rgba(0, 0, 0, 0.1);
   }
   ::-webkit-scrollbar-track {
     border-radius: 0;
-    background: rgba(255,255,255,0.5);
+    background: rgba(255, 255, 255, 0.5);
   }
 }
 </style>

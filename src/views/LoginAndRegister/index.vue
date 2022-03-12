@@ -10,7 +10,8 @@
     <div class="background">
       <img
         class="login-logo"
-        src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/login-logo.png">
+        src="https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/login-logo.png"
+      />
       <transition name="fade">
         <router-view></router-view>
       </transition>
@@ -19,8 +20,8 @@
 </template>
 <script>
 export default {
-  name: 'LoginAndRegister',
-  data () {
+  name: "LoginAndRegister",
+  data() {
     return {
       isLogin: true,
       isRegister: false,
@@ -35,22 +36,23 @@ export default {
 .fade-leave-active {
   transition: all 0.5s ease;
 }
-.fade-enter, .fade-leave-to{
+.fade-enter,
+.fade-leave-to {
   transform: translateX(50px);
   opacity: 0;
 }
-.login-and-register{
+.login-and-register {
   width: 100%;
   height: 100%;
-  background-image: url('https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/TomHegen.jpg');
+  background-image: url("https://lost-and-find.oss-cn-hangzhou.aliyuncs.com/local-img/TomHegen.jpg");
   background-size: cover;
-  .background{
+  .background {
     width: 100%;
     height: 100%;
-    background: rgba(0,0,0,0.5);
+    background: rgba(0, 0, 0, 0.5);
     display: flex;
     align-items: center;
-    .login-logo{
+    .login-logo {
       width: 300px;
       position: absolute;
       top: 0;
@@ -58,50 +60,50 @@ export default {
       left: 20%;
       margin: auto;
     }
-    .login-and-register-container{
-      /deep/ .tips-container{
+    .login-and-register-container {
+      ::v-deep .tips-container {
         font-size: 16px;
         margin-bottom: 30px;
         display: flex;
         flex-direction: column;
         align-items: flex-start;
-        .title-name{
+        .title-name {
           font-size: 35px;
           font-weight: bold;
           margin-bottom: 20px;
         }
       }
-      /deep/ .ant-form-explain{
+      ::v-deep .ant-form-explain {
         width: fit-content;
         width: -moz-fit-content;
       }
-      /deep/ .ant-form-item-label{
+      ::v-deep .ant-form-item-label {
         line-height: 20px;
       }
-      /deep/ .ant-form-item-control{
-        input{
+      ::v-deep .ant-form-item-control {
+        input {
           border-top: 0px;
           border-left: 0px;
           border-right: 0px;
           border-radius: 0;
-          &:focus{
+          &:focus {
             box-shadow: none;
           }
         }
       }
-      /deep/ .ant-tabs{
+      ::v-deep .ant-tabs {
         margin-top: -15px;
-        .ant-tabs-nav-wrap{
-          .ant-tabs-nav-scroll{
-            display:flex;
-            justify-content:flex-start;
-            .ant-tabs-tab:hover{
+        .ant-tabs-nav-wrap {
+          .ant-tabs-nav-scroll {
+            display: flex;
+            justify-content: flex-start;
+            .ant-tabs-tab:hover {
               color: $mainColor;
             }
-            .ant-tabs-tab-active{
+            .ant-tabs-tab-active {
               color: $mainColor;
             }
-            .ant-tabs-ink-bar{
+            .ant-tabs-ink-bar {
               background-color: $mainColor;
             }
           }
@@ -118,7 +120,7 @@ export default {
       // margin: auto;
       border: 1px solid #000;
       border-radius: 5px;
-      background-color: #FFF;
+      background-color: #fff;
     }
   }
 }

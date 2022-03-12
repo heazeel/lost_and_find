@@ -6,36 +6,32 @@
  * @LastEditTime: 2021-04-20 23:09:00
 -->
 <template>
-  <div
-    id="search"
-    class="search-down">
-    <a-row
-      id="search-row"
-      type="flex"
-      justify="center">
+  <div id="search" class="search-down">
+    <a-row id="search-row" type="flex" justify="center">
       <a-col flex="auto">
         <a-input
           id="search-input"
           v-model="filterData.description"
           autocomplete="off"
           placeholder="搜索 Lost&Found"
-          @keyup.enter="handleSearch">
+          @keyup.enter="handleSearch"
+        >
           <a-icon
             slot="prefix"
             type="search"
-            :style="{color: '#707070', 'padding-left': '3px'}"
-            @click="handleSearch" />
+            :style="{ color: '#707070', 'padding-left': '3px' }"
+            @click="handleSearch"
+          />
           <a-tooltip slot="suffix" title="图像搜索">
-            <a-popover
-              placement="bottomRight"
-              trigger="click">
+            <a-popover placement="bottomRight" trigger="click">
               <div slot="content" class="clearfix" style="width: 102px;">
                 <a-upload
                   :action="url"
                   list-type="picture-card"
                   :file-list="fileList"
                   @preview="handlePreview"
-                  @change="handleChange">
+                  @change="handleChange"
+                >
                   <div v-if="fileList.length < 1">
                     <a-icon type="plus" />
                     <div class="ant-upload-text">
@@ -43,11 +39,15 @@
                     </div>
                   </div>
                 </a-upload>
-                <a-modal :visible="previewVisible" :footer="null" @cancel="handleCancel">
+                <a-modal
+                  :visible="previewVisible"
+                  :footer="null"
+                  @cancel="handleCancel"
+                >
                   <img alt="example" style="width: 100%" :src="previewImage" />
                 </a-modal>
               </div>
-              <a-icon type="camera" :style="{color: '#707070'}" />
+              <a-icon type="camera" :style="{ color: '#707070' }" />
             </a-popover>
           </a-tooltip>
         </a-input>
@@ -59,18 +59,13 @@
             v-model="filterData.submissionType"
             default-value="lost"
             button-style="solid"
-            @change="onChange">
-            <div
-              id="search-radio-item-mask"
-              ref="slider" />
-            <a-radio-button
-              value="lost"
-              @click="changeSearchCriteria(0)">
+            @change="onChange"
+          >
+            <div id="search-radio-item-mask" ref="slider" />
+            <a-radio-button value="lost" @click="changeSearchCriteria(0)">
               失物招领
             </a-radio-button>
-            <a-radio-button
-              value="find"
-              @click="changeSearchCriteria(1)">
+            <a-radio-button value="find" @click="changeSearchCriteria(1)">
               寻物启事
             </a-radio-button>
           </a-radio-group>
@@ -80,48 +75,48 @@
   </div>
 </template>
 <script>
-import { get } from '@/api/axios'; // 导入http中创建的axios实例
-function getBase64 (file) {
+import { get } from "@/api/axios"; // 导入http中创建的axios实例
+function getBase64(file) {
   return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = () => resolve(reader.result);
-    reader.onerror = error => reject(error);
+    reader.onerror = (error) => reject(error);
   });
 }
 export default {
-  name: 'Search',
-  data () {
+  name: "Search",
+  data() {
     return {
-      url: this.HOME + '/imageSearch',
+      url: this.HOME + "/imageSearch",
       filterData: {
-        submissionType: 'lost',
+        submissionType: "lost",
         description: null,
       },
       visible: false,
       previewVisible: false,
-      previewImage: '',
+      previewImage: "",
       fileList: [],
     };
   },
   computed: {
-    searchCriteria () {
+    searchCriteria() {
       return this.$store.state.goodsItem.searchCriteria;
     },
-    itemArr () {
+    itemArr() {
       return this.$store.state.goodsItem.itemArr;
     },
   },
   watch: {
     searchCriteria: {
-      handler (newVal) {
+      handler(newVal) {
         this.init();
       },
       deep: true,
     },
   },
   methods: {
-    init () {
+    init() {
       // this.$store.commit('changeSpinStatus', true);
       // const url = '/goods';
       // const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
@@ -129,32 +124,32 @@ export default {
       // setTimeout(() => {
       //   this.$store.commit('changeSpinStatus', false);
       // }, 300);
-      this.$store.dispatch('init');
+      this.$store.dispatch("init");
     },
-    handleSearch () {
-      this.$store.commit('setSearchCriteria', this.filterData);
+    handleSearch() {
+      this.$store.commit("setSearchCriteria", this.filterData);
     },
-    onChange (e) {
+    onChange(e) {
       this.filterData.submissionType = e.target.value;
-      this.$store.commit('setSearchCriteria', this.filterData);
+      this.$store.commit("setSearchCriteria", this.filterData);
     },
-    changeSearchCriteria (index) {
+    changeSearchCriteria(index) {
       this.$refs.slider.style.transform = `translateX(${index * 97.5}px)`;
     },
-    handleCancel () {
+    handleCancel() {
       this.previewVisible = false;
     },
-    async handlePreview (file) {
+    async handlePreview(file) {
       if (!file.url && !file.preview) {
         file.preview = await getBase64(file.originFileObj);
       }
       this.previewImage = file.url || file.preview;
       this.previewVisible = true;
     },
-    handleChange ({ file, fileList, event }) {
-      console.log('file', file);
+    handleChange({ file, fileList, event }) {
+      console.log("file", file);
       if (file && file.response && file.response.content) {
-        this.$store.commit('setGoodsItem', file.response.content);
+        this.$store.commit("setGoodsItem", file.response.content);
       }
       this.fileList = fileList;
     },
@@ -162,50 +157,50 @@ export default {
 };
 </script>
 <style lang="scss" scoped>
-/deep/ .ant-upload.ant-upload-select-picture-card{
+::v-deep .ant-upload.ant-upload-select-picture-card {
   margin: 0px !important;
 }
-#search{
+#search {
   // transition: transform 0.5s ease;
   // transition: width 0.8s ease;
-  transition-property: width , transform;
-  transition-duration: 0.3s , 0.3s;
+  transition-property: width, transform;
+  transition-duration: 0.3s, 0.3s;
   transition-timing-function: ease, ease;
-  #search-row{
+  #search-row {
     transition: all 0.3s ease;
-    .ant-input-affix-wrapper{
+    .ant-input-affix-wrapper {
       transition: all 0.3s ease;
     }
-    #search-criteria{
+    #search-criteria {
       transition: all 0.3s ease;
-      #search-radio-item-mask{
+      #search-radio-item-mask {
         transition: all 0.3s ease;
       }
-      .ant-radio-button-wrapper{
+      .ant-radio-button-wrapper {
         transition: all 0.3s ease;
       }
-      .ant-radio-button-wrapper-checked{
+      .ant-radio-button-wrapper-checked {
         transition: all 0.3s ease;
       }
     }
   }
 }
-.search-down{
+.search-down {
   width: 100%;
-  #search-row{
+  #search-row {
     height: 56px;
     margin: 0 30px 0 30px;
-    .ant-input-affix-wrapper{
+    .ant-input-affix-wrapper {
       height: 56px;
-      border: 1px solid #CCC;
+      border: 1px solid #ccc;
       border-radius: 28px;
       border-top-right-radius: 0px;
       border-bottom-right-radius: 0px;
       background-color: $searchBackColor;
-      color: #CCC;
-      font-size:26px;
+      color: #ccc;
+      font-size: 26px;
       font-weight: bold;
-      /deep/ input{
+      ::v-deep input {
         height: 100%;
         border: 0px;
         border-radius: 28px;
@@ -216,26 +211,29 @@ export default {
         font-size: 22px;
         font-weight: bold;
         padding-left: 55px;
-        &::-webkit-input-placeholder{
+        &::-webkit-input-placeholder {
           color: $inputPlaceholderColor;
         }
-        &::-moz-placeholder{   /* Mozilla Firefox 19+ */
+        &::-moz-placeholder {
+          /* Mozilla Firefox 19+ */
           color: $inputPlaceholderColor;
         }
-        &:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+        &:-moz-placeholder {
+          /* Mozilla Firefox 4 to 18 */
           color: $inputPlaceholderColor;
         }
-        &:-ms-input-placeholder{  /* Internet Explorer 10-11 */
+        &:-ms-input-placeholder {
+          /* Internet Explorer 10-11 */
           color: $inputPlaceholderColor;
         }
-        &:focus{
-          box-shadow:0 0 0 0;
+        &:focus {
+          box-shadow: 0 0 0 0;
         }
       }
     }
-    #search-criteria{
+    #search-criteria {
       height: 100%;
-      border: 1px solid #CCC;
+      border: 1px solid #ccc;
       border-left: 0px;
       border-radius: 28px;
       border-bottom-left-radius: 0px;
@@ -243,11 +241,11 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      #search-radio-item{
+      #search-radio-item {
         width: 180px;
         display: flex;
         justify-content: between;
-        #search-radio-item-mask{
+        #search-radio-item-mask {
           position: absolute;
           width: 82.5px;
           height: 32px;
@@ -256,61 +254,61 @@ export default {
           transition: all 0.4s ease;
           transform: translateX(0px);
         }
-        label:focus-within{
+        label:focus-within {
           outline: 0px;
         }
-        label{
+        label {
           border: 0px;
-          &:before{
-              display: none;
-            }
-          &:hover{
+          &:before {
+            display: none;
+          }
+          &:hover {
             background-color: $hoverBackColor;
             color: #000;
           }
-          &:nth-child(3){
+          &:nth-child(3) {
             margin-left: 15px;
           }
         }
-        .ant-radio-button-wrapper{
+        .ant-radio-button-wrapper {
           width: 50%;
           border-radius: 16px;
-          display:flex;
+          display: flex;
           justify-content: center;
           align-items: center;
         }
-        .ant-radio-button-wrapper-checked{
-          background-color: rgba(0,0,0,0);
-          color: #FFF;
-          border-color: rgba(0,0,0,0);
-          box-shadow: 0 0 0 rgba(0,0,0,0);
+        .ant-radio-button-wrapper-checked {
+          background-color: rgba(0, 0, 0, 0);
+          color: #fff;
+          border-color: rgba(0, 0, 0, 0);
+          box-shadow: 0 0 0 rgba(0, 0, 0, 0);
           transition: all 0.3s ease;
-          &:hover{
-            color: #FFF;
-            background-color: rgba(0,0,0,1);
+          &:hover {
+            color: #fff;
+            background-color: rgba(0, 0, 0, 1);
           }
         }
       }
     }
   }
 }
-.search-up{
+.search-up {
   width: 40%;
   transform: translate(80%, -68px);
-  #search-row{
+  #search-row {
     height: 35px;
     // margin: 0 30% 0 30%;
-    .ant-input-affix-wrapper{
+    .ant-input-affix-wrapper {
       height: 35px;
-      border: 1px solid #CCC;
+      border: 1px solid #ccc;
       border-radius: 4px;
       border-top-right-radius: 0px;
       border-bottom-right-radius: 0px;
       background-color: $searchBackColor;
-      color: #CCC;
-      font-size:18px;
+      color: #ccc;
+      font-size: 18px;
       font-weight: bold;
-      /deep/ input{
+      ::v-deep input {
         height: 100%;
         border: 0px;
         border-radius: 28px;
@@ -321,26 +319,29 @@ export default {
         font-size: 16px;
         font-weight: bold;
         padding-left: 45px;
-        &::-webkit-input-placeholder{
+        &::-webkit-input-placeholder {
           color: $inputPlaceholderColor;
         }
-        &::-moz-placeholder{   /* Mozilla Firefox 19+ */
+        &::-moz-placeholder {
+          /* Mozilla Firefox 19+ */
           color: $inputPlaceholderColor;
         }
-        &:-moz-placeholder{    /* Mozilla Firefox 4 to 18 */
+        &:-moz-placeholder {
+          /* Mozilla Firefox 4 to 18 */
           color: $inputPlaceholderColor;
         }
-        &:-ms-input-placeholder{  /* Internet Explorer 10-11 */
+        &:-ms-input-placeholder {
+          /* Internet Explorer 10-11 */
           color: $inputPlaceholderColor;
         }
-        &:focus{
-          box-shadow:0 0 0 0;
+        &:focus {
+          box-shadow: 0 0 0 0;
         }
       }
     }
-    #search-criteria{
+    #search-criteria {
       height: 100%;
-      border: 1px solid #CCC;
+      border: 1px solid #ccc;
       border-left: 0px;
       border-radius: 4px;
       border-bottom-left-radius: 0px;
@@ -348,11 +349,11 @@ export default {
       display: flex;
       justify-content: center;
       align-items: center;
-      #search-radio-item{
+      #search-radio-item {
         width: 180px;
         display: flex;
         justify-content: between;
-        #search-radio-item-mask{
+        #search-radio-item-mask {
           position: absolute;
           width: 82.5px;
           height: 32px;
@@ -362,38 +363,38 @@ export default {
           transform: translateX(0px);
           display: none;
         }
-        label:focus-within{
+        label:focus-within {
           outline: 0px;
         }
-        label{
+        label {
           border: 0px;
-          &:before{
-              display: none;
-            }
-          &:hover{
+          &:before {
+            display: none;
+          }
+          &:hover {
             background-color: $hoverBackColor;
             color: #000;
           }
-          &:nth-child(3){
+          &:nth-child(3) {
             margin-left: 0px;
           }
         }
-        .ant-radio-button-wrapper{
+        .ant-radio-button-wrapper {
           width: 50%;
           border-radius: 4px;
-          display:flex;
+          display: flex;
           justify-content: center;
           align-items: center;
         }
-        .ant-radio-button-wrapper-checked{
-          background-color: rgba(0,0,0,1);
-          color: #FFF;
-          border-color: rgba(0,0,0,1);
-          box-shadow: 0 0 0 rgba(0,0,0,0);
+        .ant-radio-button-wrapper-checked {
+          background-color: rgba(0, 0, 0, 1);
+          color: #fff;
+          border-color: rgba(0, 0, 0, 1);
+          box-shadow: 0 0 0 rgba(0, 0, 0, 0);
           transition: all 0.3s ease;
-          &:hover{
-            color: #FFF;
-            background-color: rgba(0,0,0,1);
+          &:hover {
+            color: #fff;
+            background-color: rgba(0, 0, 0, 1);
           }
         }
       }

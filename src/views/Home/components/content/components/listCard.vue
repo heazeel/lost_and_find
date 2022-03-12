@@ -13,18 +13,16 @@
       </a-empty>
     </div>
     <ul @click="showDetail">
-      <li v-for="(item, index) in itemArr"
+      <li
+        v-for="(item, index) in itemArr"
         :id="`item${index}`"
         :key="item.goodsId"
         class="item-card"
-        :data-index="index">
+        :data-index="index"
+      >
         <a-card>
-          <img
-            slot="cover"
-            alt="example"
-            :src="item.photos.split(',')[0]">
-          <a-card-meta id="meta1" :title="item.type">
-          </a-card-meta>
+          <img slot="cover" alt="example" :src="item.photos.split(',')[0]" />
+          <a-card-meta id="meta1" :title="item.type"> </a-card-meta>
           <a-card-meta id="meta2" :title="item.title">
             <template slot="description">
               {{ item.date }}
@@ -43,31 +41,31 @@
   </div>
 </template>
 <script>
-import { get } from '@/api/axios'; // 导入http中创建的axios实例
-import Drawer from './drawer';
+import { get } from "@/api/axios"; // 导入http中创建的axios实例
+import Drawer from "./drawer";
 export default {
   components: {
     Drawer,
   },
-  data () {
+  data() {
     return {
       showType: 0, // 0代表列表模式， 1代表地图模式
       timer: false,
       screenWidth: document.body.clientWidth,
       visible: false,
       detailData: {
-        photos: '',
+        photos: "",
       },
       isEmpty: true,
     };
   },
   computed: {
-    itemArr () {
+    itemArr() {
       return this.$store.state.goodsItem.itemArr;
     },
   },
   watch: {
-    itemArr (val) {
+    itemArr(val) {
       if (val.length != 0) {
         this.isEmpty = false;
         const that = this;
@@ -85,16 +83,15 @@ export default {
             that.listArrangement(newArr, 1);
           }
         });
-      }
-      else {
+      } else {
         this.isEmpty = true;
       }
     },
   },
-  created () {
+  created() {
     this.initData();
   },
-  mounted () {
+  mounted() {
     const that = this;
     window.onresize = () => {
       that.screenWidth = document.body.clientWidth;
@@ -104,7 +101,7 @@ export default {
         that.timer = true;
         // const that = this;
         const newArr = [];
-        setTimeout(function () {
+        setTimeout(function() {
           if (that.screenWidth > 1900) {
             that.listArrangement(newArr, 5);
           } else if (that.screenWidth > 1300 && that.screenWidth <= 1900) {
@@ -124,53 +121,69 @@ export default {
   },
   methods: {
     // 获取物品信息数据
-    async initData () {
-      const url = '/goods';
-      const res = await get(url, { ...this.$store.state.goodsItem.searchCriteria });
-      this.$store.commit('setGoodsItem', res.content);
+    async initData() {
+      const url = "/goods";
+      const res = await get(url, {
+        ...this.$store.state.goodsItem.searchCriteria,
+      });
+      this.$store.commit("setGoodsItem", res.content);
     },
     // 列表响应式布局
-    listArrangement (newArr, section) {
+    listArrangement(newArr, section) {
       for (let i = 0; i < this.itemArr.length; i += section) {
         newArr.push(this.itemArr.slice(i, i + section));
       }
       let count = 0;
       for (let i = 0; i < newArr.length; i++) {
         for (let j = 0; j < newArr[i].length; j++) {
-          if (document.getElementById('item' + count)) {
-            document.getElementById('item' + count).style.transform = `translate(${j * 100}%, ${i * 100}%)`;
+          if (document.getElementById("item" + count)) {
+            document.getElementById(
+              "item" + count
+            ).style.transform = `translate(${j * 100}%, ${i * 100}%)`;
           }
           // this.$refs[`item${count}`].style = `transform: translate(${j * 100}%, ${i * 100}%)`;
           count++;
         }
       }
     },
-    scroll () {
-      document.getElementsByClassName('ant-layout-content')[0].addEventListener('scroll', this.$tools.throttle(function () {
-        var scrollTop = document.getElementsByClassName('ant-layout-content')[0].scrollTop;
-        if (scrollTop <= 200) {
-          document.getElementById('search').className = 'search-down';
-          document.getElementById('filter-btn').className = 'filter-btn-down';
-          document.getElementsByClassName('ant-layout-header')[0].style.height = '216px';
-          document.getElementById('home-header').style['box-shadow'] = '0px 2px 2px #F2F2F2';
-          document.getElementById('home-content').style.top = '217px';
-        } else {
-          document.getElementById('search').className = 'search-up';
-          document.getElementById('filter-btn').className = 'filter-btn-up';
-          document.getElementsByClassName('ant-layout-header')[0].style.height = '140px';
-          document.getElementById('home-content').style.top = '140px';
-          document.getElementById('home-header').style['box-shadow'] = '0px 2px 8px 1px #CCC';
-        }
-      }, 50), false);
+    scroll() {
+      document.getElementsByClassName("ant-layout-content")[0].addEventListener(
+        "scroll",
+        this.$tools.throttle(function() {
+          var scrollTop = document.getElementsByClassName(
+            "ant-layout-content"
+          )[0].scrollTop;
+          if (scrollTop <= 200) {
+            document.getElementById("search").className = "search-down";
+            document.getElementById("filter-btn").className = "filter-btn-down";
+            document.getElementsByClassName(
+              "ant-layout-header"
+            )[0].style.height = "216px";
+            document.getElementById("home-header").style["box-shadow"] =
+              "0px 2px 2px #F2F2F2";
+            document.getElementById("home-content").style.top = "217px";
+          } else {
+            document.getElementById("search").className = "search-up";
+            document.getElementById("filter-btn").className = "filter-btn-up";
+            document.getElementsByClassName(
+              "ant-layout-header"
+            )[0].style.height = "140px";
+            document.getElementById("home-content").style.top = "140px";
+            document.getElementById("home-header").style["box-shadow"] =
+              "0px 2px 8px 1px #CCC";
+          }
+        }, 50),
+        false
+      );
     },
-    showDetail (e) {
+    showDetail(e) {
       this.visible = true;
-      if (e.target.offsetParent.nodeName.toLowerCase() === 'li') {
+      if (e.target.offsetParent.nodeName.toLowerCase() === "li") {
         const index = parseInt(e.target.offsetParent.dataset.index);
         this.detailData = this.itemArr[index];
       }
     },
-    closeDrawer () {
+    closeDrawer() {
       this.visible = false;
     },
   },
@@ -179,22 +192,29 @@ export default {
 <style lang="scss" scoped>
 @mixin screen($sWidth) {
   @if $sWidth == level1 {
-    @media screen and (min-width: 1900px) { @content; }
+    @media screen and (min-width: 1900px) {
+      @content;
+    }
   }
   @if $sWidth == level2 {
-    @media screen and (max-width: 1900px) { @content; }
-  }
-  @else if $sWidth == level3 {
-    @media screen and (max-width: 1300px) { @content; }
-  }
-  @else if $sWidth == level4 {
-    @media screen and (max-width: 965px) { @content; }
-  }
-  @else if $sWidth == level5 {
-     @media screen and (max-width: 665px) { @content; }
+    @media screen and (max-width: 1900px) {
+      @content;
+    }
+  } @else if $sWidth == level3 {
+    @media screen and (max-width: 1300px) {
+      @content;
+    }
+  } @else if $sWidth == level4 {
+    @media screen and (max-width: 965px) {
+      @content;
+    }
+  } @else if $sWidth == level5 {
+    @media screen and (max-width: 665px) {
+      @content;
+    }
   }
 }
-#main-content{
+#main-content {
   position: relative;
   background-color: rgb(255, 255, 255);
   // overflow: auto;
@@ -202,17 +222,17 @@ export default {
   max-width: 2968px;
   box-sizing: border-box;
   margin: 14px 15px 0px 20px;
-  #empty-container{
+  #empty-container {
     width: 100%;
     height: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
-    .ant-empty{
+    .ant-empty {
       transform: translateY(-50px);
     }
   }
-  .item-card{
+  .item-card {
     position: absolute;
     transition: transform 0.3s ease;
     left: 0;
@@ -235,16 +255,16 @@ export default {
       width: 100%;
     }
     &::before {
-      content: '';
+      content: "";
       padding-top: 95%;
       float: left;
     }
     &::after {
-      content: '';
+      content: "";
       display: block;
       clear: both;
     }
-    .ant-card{
+    .ant-card {
       border: 0px;
       height: 100%;
       width: 95%;
@@ -254,12 +274,12 @@ export default {
       top: 0;
       bottom: 0;
       margin: auto;
-      /deep/ .ant-card-cover{
+      ::v-deep .ant-card-cover {
         // height: 280px;
         height: 80%;
         position: relative;
         // overflow: hidden;
-        img{
+        img {
           height: 100%;
           width: 100%;
           object-fit: cover;
@@ -267,7 +287,7 @@ export default {
           filter: none;
         }
       }
-      /deep/ .ant-card-body{
+      ::v-deep .ant-card-body {
         position: relative;
         // width: calc(100% - 2px);
         // min-height: 55px;
@@ -275,27 +295,27 @@ export default {
         padding: 10px;
         // box-shadow: 1px 1px 10px 1px #e8e8e8;
         margin: auto;
-        #meta1{
-          .ant-card-meta-title{
+        #meta1 {
+          .ant-card-meta-title {
             text-align: start;
             color: #000;
             font-size: 20px;
             font-weight: bold;
           }
         }
-        #meta2{
+        #meta2 {
           font-size: 16px;
           margin-top: 5px;
-          .ant-card-meta-title{
+          .ant-card-meta-title {
             float: left;
           }
-          .ant-card-meta-description{
+          .ant-card-meta-description {
             float: right;
           }
         }
       }
     }
-    .card-mask{
+    .card-mask {
       position: absolute;
       top: 0;
       left: 0;
@@ -303,7 +323,7 @@ export default {
       margin: auto;
       width: calc(100% - 20px);
       height: 80%;
-      background-color: rgba(0,0,0,0.3);
+      background-color: rgba(0, 0, 0, 0.3);
       transition: opacity ease 0.3s;
       opacity: 0;
       border-radius: 5px;
@@ -313,17 +333,17 @@ export default {
       align-items: center;
       justify-content: space-around;
       font-size: 16px;
-      span{
-        color: #FFF;
+      span {
+        color: #fff;
         font-weight: bold;
         font-size: 18px;
       }
     }
   }
-  .item-card:hover > .card-mask{
+  .item-card:hover > .card-mask {
     opacity: 1;
   }
-  .item-card:hover > .ant-card > .ant-card-cover > img{
+  .item-card:hover > .ant-card > .ant-card-cover > img {
     filter: blur(3px);
   }
 }
